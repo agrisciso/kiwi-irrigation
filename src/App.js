@@ -546,9 +546,9 @@ export default function KiwiIrrigationCalc() {
           </select>
           <div style={{ display:"flex", gap:8 }}>
             {[
-              { l:"FC", v:SOIL_TYPES[soilType].fc+"%" },
-              { l:"WP", v:SOIL_TYPES[soilType].wp+"%" },
-              { l:"AD=FC–WP", v:(SOIL_TYPES[soilType].fc-SOIL_TYPES[soilType].wp)+"%" },
+              { l:"FC", v:SOIL_TYPES_DATA[soilType].fc+"%" },
+              { l:"WP", v:SOIL_TYPES_DATA[soilType].wp+"%" },
+              { l:"AD=FC–WP", v:(SOIL_TYPES_DATA[soilType].fc-SOIL_TYPES_DATA[soilType].wp)+"%" },
             ].map(item => (
               <div key={item.l} style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 6px", textAlign:"center" }}>
                 <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{item.l}</div>
