@@ -8,7 +8,7 @@ const LANGS = {
     brand: "AgriSci Solutions",
     password: "Κωδικός πρόσβασης",
     enter: "Είσοδος",
-    wrongPw: L2.wrongPw,
+    wrongPw: "Λάθος κωδικός. Επικοινωνήστε με την AgriSci Solutions.",
     month: "Μήνας", treeAge: "Ηλικία δένδρων", pheno: "Φαινολογική φάση",
     rowSpacing: "Απόσταση μεταξύ σειρών (m)", rainfall: "Βροχόπτωση ημέρας (mm)",
     tmax: "Μέγιστη θερμοκρασία ημέρας (°C)", soil: "Τύπος Εδάφους",
@@ -247,7 +247,7 @@ export default function KiwiIrrigationCalc() {
 
     // Available & readily available water in Vs
     const aw_pct = (soil.fc - soil.wp) / 100;
-    const AW  = Vs * soil.bulk * aw_pct * 1000;  // m³/ha
+    const AW  = Vs * aw_pct;  // m³/ha (volumetric water content)
     const RAW = AW * 0.40;                         // 40% threshold 
 
     // Irrigation frequency: days to deplete RAW
