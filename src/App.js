@@ -1,5 +1,109 @@
 import { useState, useEffect } from "react";
 
+// ─── Multilingual support ───────────────────────────────────────────────────
+const LANGS = {
+  el: {
+    title: "Υπολογιστής Άρδευσης Ακτινίδιου",
+    subtitle: "Αποκλειστικό εργαλείο για πελάτες",
+    brand: "AgriSci Solutions",
+    password: "Κωδικός πρόσβασης",
+    enter: "Είσοδος",
+    wrongPw: L2.wrongPw,
+    month: "Μήνας", treeAge: "Ηλικία δένδρων", pheno: "Φαινολογική φάση",
+    rowSpacing: "Απόσταση μεταξύ σειρών (m)", rainfall: "Βροχόπτωση ημέρας (mm)",
+    tmax: "Μέγιστη θερμοκρασία ημέρας (°C)", soil: "Τύπος Εδάφους",
+    system: "Σύστημα Άρδευσης", emitters: "Σύνολο εκπομπών",
+    flow: "Παροχή / εκπομπή (L/h)", results: "Αποτελέσματα Ημέρας",
+    waterNeeded: "Νερό που απαιτείται σήμερα", perDay: "ημέρα",
+    et0: "ET₀ (εκτίμηση)", kc: "Kc", etc: "ETc", net: "Καθαρή ανάγκη",
+    runtime: "Χρόνος λειτουργίας", cycle: "Κύκλος (αποστράγγιση AFD)",
+    sessions: "Συνιστώμενη κατανομή", perSession: "λεπτά × φορές/ημέρα",
+    totalFlow: "Συνολική παροχή", critical: "Κρίσιμη Φάση",
+    undersized: "Ανεπαρκής παροχή συστήματος",
+    notNeeded: "Δεν απαιτείται", every: "κάθε", days: "ημέρα/ες",
+    perUnit: "στρέμμα", perHa: "εκτάριο",
+    young: "1–3 έτη (νεαρό)", mature: "≥4 έτη (ενήλικο)",
+    stremma: "ανά στρέμμα", hectare: "ανά εκτάριο",
+    emittersHelp: "Εισάγετε το σύνολο των εκπομπών (όλοι οι αγωγοί μαζί).",
+    emittersExample: "Π.χ. 2 αγωγοί × 100 σταλ./αγωγό =",
+  },
+  en: {
+    title: "Kiwifruit Irrigation Calculator",
+    subtitle: "Exclusive tool for clients",
+    brand: "AgriSci Solutions",
+    password: "Access password",
+    enter: "Enter",
+    wrongPw: "Wrong password. Contact AgriSci Solutions.",
+    month: "Month", treeAge: "Tree age", pheno: "Phenological stage",
+    rowSpacing: "Row spacing (m)", rainfall: "Daily rainfall (mm)",
+    tmax: "Maximum daily temperature (°C)", soil: "Soil Type",
+    system: "Irrigation System", emitters: "Total emitters",
+    flow: "Flow per emitter (L/h)", results: "Daily Results",
+    waterNeeded: "Water needed today", perDay: "day",
+    et0: "ET₀ (estimate)", kc: "Kc", etc: "ETc", net: "Net requirement",
+    runtime: "Run time", cycle: "Cycle (RAW depletion)",
+    sessions: "Recommended split", perSession: "min × times/day",
+    totalFlow: "Total system flow", critical: "Critical Stage",
+    undersized: "System flow insufficient",
+    notNeeded: "Not required", every: "every", days: "day(s)",
+    perUnit: "acre", perHa: "hectare",
+    young: "1–3 years (young)", mature: "≥4 years (mature)",
+    stremma: "per stremma", hectare: "per hectare",
+    emittersHelp: "Enter total emitters across ALL driplines.",
+    emittersExample: "e.g. 2 lines × 100 drippers =",
+  },
+  it: {
+    title: "Calcolatore Irrigazione Kiwi",
+    subtitle: "Strumento esclusivo per clienti",
+    brand: "AgriSci Solutions",
+    password: "Password di accesso",
+    enter: "Accedi",
+    wrongPw: "Password errata. Contatta AgriSci Solutions.",
+    month: "Mese", treeAge: "Età delle piante", pheno: "Fase fenologica",
+    rowSpacing: "Distanza tra filari (m)", rainfall: "Pioggia giornaliera (mm)",
+    tmax: "Temperatura massima giornaliera (°C)", soil: "Tipo di Suolo",
+    system: "Sistema di Irrigazione", emitters: "Totale erogatori",
+    flow: "Portata per erogatore (L/h)", results: "Risultati Giornalieri",
+    waterNeeded: "Acqua necessaria oggi", perDay: "giorno",
+    et0: "ET₀ (stima)", kc: "Kc", etc: "ETc", net: "Fabbisogno netto",
+    runtime: "Tempo di funzionamento", cycle: "Ciclo (esaurimento AFD)",
+    sessions: "Distribuzione consigliata", perSession: "min × volte/giorno",
+    totalFlow: "Portata totale sistema", critical: "Fase Critica",
+    undersized: "Portata sistema insufficiente",
+    notNeeded: "Non necessario", every: "ogni", days: "giorno/i",
+    perUnit: "stremma", perHa: "ettaro",
+    young: "1–3 anni (giovane)", mature: "≥4 anni (adulto)",
+    stremma: "per stremma", hectare: "per ettaro",
+    emittersHelp: "Inserire il totale degli erogatori (tutte le linee).",
+    emittersExample: "Es. 2 linee × 100 gocciolatori =",
+  },
+  es: {
+    title: "Calculadora de Riego para Kiwi",
+    subtitle: "Herramienta exclusiva para clientes",
+    brand: "AgriSci Solutions",
+    password: "Contraseña de acceso",
+    enter: "Entrar",
+    wrongPw: "Contraseña incorrecta. Contacta AgriSci Solutions.",
+    month: "Mes", treeAge: "Edad de las plantas", pheno: "Fase fenológica",
+    rowSpacing: "Distancia entre filas (m)", rainfall: "Lluvia diaria (mm)",
+    tmax: "Temperatura máxima diaria (°C)", soil: "Tipo de Suelo",
+    system: "Sistema de Riego", emitters: "Total emisores",
+    flow: "Caudal por emisor (L/h)", results: "Resultados Diarios",
+    waterNeeded: "Agua necesaria hoy", perDay: "día",
+    et0: "ET₀ (estimación)", kc: "Kc", etc: "ETc", net: "Necesidad neta",
+    runtime: "Tiempo de funcionamiento", cycle: "Ciclo (agotamiento AFD)",
+    sessions: "Distribución recomendada", perSession: "min × veces/día",
+    totalFlow: "Caudal total sistema", critical: "Fase Crítica",
+    undersized: "Caudal del sistema insuficiente",
+    notNeeded: "No necesario", every: "cada", days: "día(s)",
+    perUnit: "estrémma", perHa: "hectárea",
+    young: "1–3 años (joven)", mature: "≥4 años (adulto)",
+    stremma: "por estrémma", hectare: "por hectárea",
+    emittersHelp: "Introducir el total de emisores (todas las líneas).",
+    emittersExample: "Ej. 2 líneas × 100 goteros =",
+  },
+};
+
 // Kc & ET0 measured values — user's field data (mature kiwifruit, Mediterranean)
 // Apr:0.50 May:0.70 Jun:0.90 Jul:1.10 Aug:1.10 Sep:0.80 Oct:0.80
 // Minimum ETc (mm/day): May:4.2 Jun:4.9 Jul:5.2 Aug:5.2
@@ -93,6 +197,8 @@ const cardStyle = {
 };
 
 export default function KiwiIrrigationCalc() {
+  const [appLang,       setAppLang]       = useState("el");
+  const L2 = LANGS[appLang];
   const [tmax,          setTmax]          = useState(35);
   const [month,         setMonth]         = useState(7); // 1-12, default July
   const [soilType,      setSoilType]      = useState("clay_loam");
@@ -219,17 +325,28 @@ export default function KiwiIrrigationCalc() {
           border:"1px solid #d6ead9", maxWidth:340, width:"100%",
           textAlign:"center",
         }}>
+          {/* Language selector on login */}
+          <div style={{ display:"flex", gap:6, justifyContent:"center", marginBottom:16 }}>
+            {["el","en","it","es"].map(l => (
+              <button key={l} onClick={() => setAppLang(l)} style={{
+                padding:"4px 10px", borderRadius:6, border:"none", cursor:"pointer",
+                background: appLang===l ? darkGreen : "#e8f0e8",
+                color: appLang===l ? "#fff" : darkGreen,
+                fontSize:12, fontWeight:700,
+              }}>{l.toUpperCase()}</button>
+            ))}
+          </div>
           <div style={{ fontSize:40, marginBottom:12 }}>🥝</div>
           <div style={{ fontSize:20, fontWeight:800, color:darkGreen, marginBottom:4 }}>
-            Υπολογιστής Άρδευσης
+            {L2.title}
           </div>
           <div style={{ fontSize:13, color:"#666", marginBottom:24, lineHeight:1.5 }}>
-            Αποκλειστικό εργαλείο για πελάτες<br/>
-            <strong style={{ color:midGreen }}>AgriSci Solutions</strong>
+            {L2.subtitle}<br/>
+            <strong style={{ color:midGreen }}>{L2.brand}</strong>
           </div>
           <input
             type="password"
-            placeholder="Κωδικός πρόσβασης"
+            placeholder={L2.password}
             value={pwInput}
             onChange={e => { setPwInput(e.target.value); setPwError(false); }}
             onKeyDown={e => {
@@ -277,11 +394,22 @@ export default function KiwiIrrigationCalc() {
       {/* Header */}
       <div style={{ background:`linear-gradient(135deg,${darkGreen} 0%,${midGreen} 100%)`, padding:"24px 22px 18px", color:"#fff" }}>
         <div style={{ maxWidth:540, margin:"0 auto" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:4 }}>
-            <span style={{ fontSize:28 }}>🥝</span>
-            <div>
-              <div style={{ fontSize:10, letterSpacing:"0.14em", opacity:0.65, textTransform:"uppercase" }}>Precision Irrigation · Ακτινίδιο</div>
-              <div style={{ fontSize:20, fontWeight:800 }}>Υπολογιστής Ημερήσιας Άρδευσης</div>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:4 }}>
+              <span style={{ fontSize:28 }}>🥝</span>
+              <div>
+                <div style={{ fontSize:10, letterSpacing:"0.14em", opacity:0.65, textTransform:"uppercase" }}>Precision Irrigation · AgriSci</div>
+                <div style={{ fontSize:18, fontWeight:800 }}>{L2.title}</div>
+              </div>
+            </div>
+            <div style={{ display:"flex", gap:5 }}>
+              {["el","en","it","es"].map(l => (
+                <button key={l} onClick={() => setAppLang(l)} style={{
+                  padding:"4px 8px", borderRadius:6, border:"none", cursor:"pointer",
+                  background: appLang===l ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)",
+                  color:"#fff", fontSize:11, fontWeight:700,
+                }}>{l.toUpperCase()}</button>
+              ))}
             </div>
           </div>
 
