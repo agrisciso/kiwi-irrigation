@@ -336,13 +336,14 @@ export default function KiwiIrrigationCalc() {
           textAlign:"center",
         }}>
           {/* Language selector on login */}
-          <div style={{ display:"flex", gap:6, justifyContent:"center", marginBottom:16 }}>
+          <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:16 }}>
             {["el","en","it","es"].map(l => (
               <button key={l} onClick={() => setAppLang(l)} style={{
                 padding:"4px 10px", borderRadius:6, border:"none", cursor:"pointer",
-                background: appLang===l ? darkGreen : "#e8f0e8",
+                background: appLang===l ? darkGreen : "#fff",
                 color: appLang===l ? "#fff" : darkGreen,
-                fontSize:12, fontWeight:700,
+                fontSize:11, fontWeight:700,
+                border: `1.5px solid ${appLang===l ? darkGreen : "#ccc"}`,
               }}>{l.toUpperCase()}</button>
             ))}
           </div>
@@ -437,7 +438,7 @@ export default function KiwiIrrigationCalc() {
               color:unit===u ? "#fff" : darkGreen,
               fontWeight:700, fontSize:13, transition:"all 0.2s",
               boxShadow:unit===u ? "0 2px 8px rgba(26,74,46,0.2)" : "0 1px 3px rgba(0,0,0,0.07)",
-            }}>{u==="stremma" ? L2.stremma : L2.hectare}</button>
+            }}>{u==="stremma" ? (appLang==="el"?"ανά στρέμμα":appLang==="en"?"per stremma":appLang==="it"?"per stremma":"por estrémma") : (appLang==="el"?"ανά εκτάριο":appLang==="en"?"per hectare":appLang==="it"?"per ettaro":"por hectárea")}</button>
           ))}
         </div>
 
@@ -471,11 +472,11 @@ export default function KiwiIrrigationCalc() {
           </div>
           <div style={{ marginTop:10, display:"flex", gap:8 }}>
             <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
-              <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>Kc μετρημένο</div>
+              <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{appLang==="el"?"Kc μετρημένο":appLang==="en"?"Measured Kc":appLang==="it"?"Kc misurato":"Kc medido"}</div>
               <div style={{ fontSize:20, fontWeight:800 }}>{KC_MONTHLY[month]?.kc.toFixed(2) ?? "—"}</div>
             </div>
             <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
-              <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>ET₀ αναφοράς (mm/ημ)</div>
+              <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{appLang==="el"?"ET₀ αναφοράς (mm/ημ)":appLang==="en"?"ET₀ reference (mm/day)":appLang==="it"?"ET₀ riferimento (mm/g)":"ET₀ referencia (mm/día)"}</div>
               <div style={{ fontSize:20, fontWeight:800 }}>{KC_MONTHLY[month]?.et0ref.toFixed(1) ?? "—"}</div>
             </div>
           </div>
@@ -495,7 +496,7 @@ export default function KiwiIrrigationCalc() {
           </div>
           {result && (
             <div style={{ background:lightGreen, borderRadius:8, padding:"7px 11px", marginBottom:10, fontSize:13 }}>
-              Εκτίμηση ET₀: <strong>{result.et0} mm/ημέρα</strong>
+              {appLang==="el"?"Εκτίμηση ET₀:":appLang==="en"?"ET₀ estimate:":appLang==="it"?"Stima ET₀:":"Estimación ET₀:"} <strong>{result.et0} mm/{L2.perDay}</strong>
               
             </div>
           )}
@@ -568,10 +569,10 @@ export default function KiwiIrrigationCalc() {
           {/* Emitters — clearly labeled as TOTAL across all lines */}
           <div style={{ background:"#f0f7f2", borderRadius:10, padding:"12px 14px", marginBottom:10 }}>
             <div style={{ fontSize:12, fontWeight:700, color:midGreen, marginBottom:8 }}>
-              Χαρακτηριστικά Εκπομπών
+              {appLang==="el"?"Χαρακτηριστικά Εκπομπών":appLang==="en"?"Emitter Settings":appLang==="it"?"Impostazioni Erogatori":"Configuración Emisores"}
             </div>
             <div style={{ fontSize:11, color:"#555", marginBottom:10, lineHeight:1.5 }}>
-              {appLang==="el"?"Εισάγετε το σύνολο των εκπομπών (όλοι οι αγωγοί μαζί).":appLang==="en"?"Enter total emitters across ALL driplines.":appLang==="it"?"Inserire il totale degli erogatori (tutte le linee).":"Introducir el total de emisores (todas las líneas)."}/{unit==="stremma"?"στρ.":"ha"} 
+              {appLang==="el"?"Εισάγετε το σύνολο (όλοι οι αγωγοί μαζί).":appLang==="en"?"Total across ALL driplines.":appLang==="it"?"Totale per tutte le linee.":"Total de todas las líneas."}/{unit==="stremma"?"στρ.":"ha"} 
               (όλοι οι αγωγοί μαζί). Π.χ. 2 αγωγοί × 100 σταλ./αγωγό = <strong>200 σταλ./{unit==="stremma"?"στρ.":"ha"}</strong>
             </div>
             <div style={{ display:"flex", gap:10 }}>
@@ -595,7 +596,7 @@ export default function KiwiIrrigationCalc() {
             </div>
             {result && (
               <div style={{ marginTop:8, fontSize:12, color:darkGreen }}>
-                Συνολική παροχή: <strong>{result.systemFlowDisplay} m³/{result.unitLabel}/h</strong>
+                {appLang==="el"?"Συνολική παροχή:":appLang==="en"?"Total flow:":appLang==="it"?"Portata totale:":"Caudal total:"} <strong>{result.systemFlowDisplay} m³/{result.unitLabel}/h</strong>
               </div>
             )}
           </div>
@@ -623,8 +624,8 @@ export default function KiwiIrrigationCalc() {
               {[
                 { l:"ET₀ (Tmax)", v:result.et0+" mm/d" },
                 { l:`Kc ${result.usingMeasuredKc?"(μετρημένο)":"(φάση)"}`, v:result.kc },
-                { l:"ETc καλλιέργειας",v:result.etc+" mm/d" },
-                { l:"Καθαρή ανάγκη",   v:result.netMM+" mm/ημ"},
+                { l:appLang==="el"?"ETc καλλιέργειας":appLang==="en"?"Crop ETc":appLang==="it"?"ETc coltura":"ETc cultivo", v:result.etc+" mm/"+L2.perDay },
+                { l:appLang==="el"?"Καθαρή ανάγκη":appLang==="en"?"Net requirement":appLang==="it"?"Fabbisogno netto":"Necesidad neta", v:result.netMM+" mm/"+L2.perDay},
               ].map(item => (
                 <div key={item.l} style={{ background:"rgba(255,255,255,0.10)", borderRadius:9, padding:"9px 11px" }}>
                   <div style={{ fontSize:10, opacity:0.6, marginBottom:2 }}>{item.l}</div>
@@ -672,9 +673,9 @@ export default function KiwiIrrigationCalc() {
               </div>
               <div style={{ display:"flex", gap:6 }}>
                 {[
-                  { l:"Vs βρεχόμενος", v:result.Vs+" m³" },
-                  { l:"AD διαθέσιμο",  v:result.AW+" m³" },
-                  { l:"AFD (40% AD)",  v:result.RAW+" m³" },
+                  { l:appLang==="el"?"Vs βρεχόμενος":appLang==="en"?"Wetted Vs":appLang==="it"?"Vs bagnato":"Vs mojado", v:result.Vs+" m³" },
+                  { l:appLang==="el"?"AD διαθέσιμο":appLang==="en"?"Available water":appLang==="it"?"Acqua disponibile":"Agua disponible", v:result.AW+" m³" },
+                  { l:"AFD (40% AD)", v:result.RAW+" m³" },
                 ].map(item => (
                   <div key={item.l} style={{ flex:1, textAlign:"center", background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px" }}>
                     <div style={{ fontSize:8.5, opacity:0.6 }}>{item.l}</div>
