@@ -285,8 +285,6 @@ export default function KiwiIrrigationCalc() {
     // Display conversion
     const factor   = unit === "stremma" ? 0.1 : 1.0;
     const unitLabel = unit === "stremma" ? "στρέμμα" : "εκτάριο";
-      ? Math.round(emittersHa / 10)
-      : emittersHa;
 
     const monthNames = ["","Ιαν","Φεβ","Μάρ","Απρ","Μάι","Ιούν","Ιούλ","Αύγ","Σεπ","Οκτ","Νοε","Δεκ"];
     setResult({
