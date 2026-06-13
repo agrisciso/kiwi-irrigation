@@ -336,7 +336,7 @@ export default function KiwiIrrigationCalc() {
           textAlign:"center",
         }}>
           {/* Language selector on login */}
-          <div style={{ display:"flex", gap:6, justifyContent:"center", marginBottom:16, flexWrap:"wrap" }}>
+          <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:16 }}>
             {["el","en","it","es"].map(l => (
               <button key={l} onClick={() => setAppLang(l)} style={{
                 padding:"4px 10px", borderRadius:6, border:"none", cursor:"pointer",
@@ -344,7 +344,7 @@ export default function KiwiIrrigationCalc() {
                 color: appLang===l ? "#fff" : darkGreen,
                 fontSize:11, fontWeight:700,
                 border: `1.5px solid ${appLang===l ? darkGreen : "#ccc"}`,
-              }}>{l.toUpperCase()}</button>
+              }}>{l==="el"?"ΕΛ":l==="en"?"EN":l==="it"?"IT":"ES"}</button>
             ))}
           </div>
           <div style={{ fontSize:40, marginBottom:12 }}>🥝</div>
