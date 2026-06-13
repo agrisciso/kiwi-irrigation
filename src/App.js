@@ -20,10 +20,10 @@ const LANGS = {
     sessions: "Συνιστώμενη κατανομή", perSession: "λεπτά × φορές/ημέρα",
     totalFlow: "Συνολική παροχή", critical: "Κρίσιμη Φάση",
     undersized: "Ανεπαρκής παροχή συστήματος",
-    notNeeded: "Δεν απαιτείται", every: "κάθε", days: "ημέρα/ες",
+    notNeeded: "{L2.notNeeded}", every: "{L2.every}", days: "{L2.days}",
     perUnit: "στρέμμα", perHa: "εκτάριο",
     young: "1–3 έτη (νεαρό)", mature: "≥4 έτη (ενήλικο)",
-    stremma: "ανά στρέμμα", hectare: "ανά εκτάριο",
+    stremma: L2.stremma, hectare: L2.hectare,
     emittersHelp: "Εισάγετε το σύνολο των εκπομπών (όλοι οι αγωγοί μαζί).",
     emittersExample: "Π.χ. 2 αγωγοί × 100 σταλ./αγωγό =",
   },
@@ -111,29 +111,29 @@ const LANGS = {
 
 // Monthly Kc lookup for precise calculation
 const KC_MONTHLY = {
-  3:  { kc: 0.30, et0ref: 1.50 }, // Μάρτιος (εκτίμηση έναρξης)
-  4:  { kc: 0.50, et0ref: 2.80 }, // Απρίλιος
-  5:  { kc: 0.70, et0ref: 5.00 }, // Μάιος
-  6:  { kc: 0.90, et0ref: 5.50 }, // Ιούνιος
-  7:  { kc: 1.10, et0ref: 7.50 }, // Ιούλιος
-  8:  { kc: 1.10, et0ref: 6.50 }, // Αύγουστος
-  9:  { kc: 0.80, et0ref: 3.40 }, // Σεπτέμβριος
-  10: { kc: 0.80, et0ref: 1.90 }, // Οκτώβριος
-  11: { kc: 0.40, et0ref: 1.20 }, // Νοέμβριος (εκτίμηση)
+  3:  { kc: 0.10, et0ref: 1.50 }, // Μάρτιος (εκτίμηση)
+  4:  { kc: 0.13, et0ref: 2.80 }, // Απρίλιος
+  5:  { kc: 0.56, et0ref: 5.00 }, // Μάιος
+  6:  { kc: 0.73, et0ref: 5.50 }, // Ιούνιος
+  7:  { kc: 0.82, et0ref: 7.50 }, // Ιούλιος
+  8:  { kc: 0.88, et0ref: 6.50 }, // Αύγουστος
+  9:  { kc: 0.64, et0ref: 3.40 }, // Σεπτέμβριος
+  10: { kc: 0.39, et0ref: 1.90 }, // Οκτώβριος
+  11: { kc: 0.20, et0ref: 1.20 }, // Νοέμβριος (εκτίμηση)
 };
 
 const KC_TABLE = {
   young: [
-    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.25, months: [3,4]    },
-    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.40, months: [5,6]    },
-    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 0.55, months: [7,8]    },
-    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.40, months: [9,10]   },
+    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.07, months: [3,4]    },
+    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.33, months: [5,6]    },
+    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 0.43, months: [7,8]    },
+    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.26, months: [9,10]   },
   ],
   mature: [
-    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.50, months: [3,4]    },
-    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.80, months: [5,6]    },
-    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 1.10, months: [7,8]    },
-    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.80, months: [9,10]   },
+    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.13, months: [3,4]    },
+    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.65, months: [5,6]    },
+    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 0.85, months: [7,8]    },
+    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.52, months: [9,10]   },
   ],
 };
 
@@ -378,7 +378,7 @@ export default function KiwiIrrigationCalc() {
               cursor:"pointer",
             }}
           >
-            Είσοδος
+            {L2.enter}
           </button>
           <div style={{ marginTop:20, fontSize:11, color:"#aaa" }}>
             agrisci-solutions.com
@@ -427,7 +427,7 @@ export default function KiwiIrrigationCalc() {
               color:unit===u ? "#fff" : darkGreen,
               fontWeight:700, fontSize:13, transition:"all 0.2s",
               boxShadow:unit===u ? "0 2px 8px rgba(26,74,46,0.2)" : "0 1px 3px rgba(0,0,0,0.07)",
-            }}>{u==="stremma" ? "ανά στρέμμα" : "ανά εκτάριο"}</button>
+            }}>{u==="stremma" ? L2.stremma : L2.hectare}</button>
           ))}
         </div>
 
@@ -473,8 +473,8 @@ export default function KiwiIrrigationCalc() {
 
         {/* Climate */}
         <div style={cardStyle}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🌡️ Θερμοκρασία Ημέρας</div>
-          <label style={labelStyle}>Μέγιστη θερμοκρασία ημέρας (°C)</label>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🌡️ {L2.tmax.split("(")[0]}</div>
+          <label style={labelStyle}>{L2.tmax}</label>
           <input type="range" min={15} max={45} value={tmax}
             onChange={e => setTmax(Number(e.target.value))}
             style={{ width:"100%", accentColor:midGreen, marginBottom:4 }} />
@@ -489,20 +489,20 @@ export default function KiwiIrrigationCalc() {
               
             </div>
           )}
-          <label style={labelStyle}>Βροχόπτωση ημέρας (mm)</label>
+          <label style={labelStyle}>{L2.rainfall}</label>
           <input type="number" min={0} max={60} value={rainfall} step={1}
             onChange={e => setRainfall(Number(e.target.value))} style={inputStyle} />
         </div>
 
         {/* Tree */}
         <div style={cardStyle}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🌿 Φυτεία</div>
-          <label style={labelStyle}>Ηλικία δένδρων</label>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>{`🌿 ${L2.treeAge}`}</div>
+          <label style={labelStyle}>{L2.treeAge}</label>
           <select value={treeAge} onChange={e => setTreeAge(e.target.value)} style={{ ...inputStyle, marginBottom:12 }}>
-            <option value="young">1–3 έτη (νεαρό, μερική κόμη)</option>
-            <option value="mature">≥4 έτη (ενήλικο, πλήρης κόμη)</option>
+            <option value="young">{L2.young}</option>
+            <option value="mature">{L2.mature}</option>
           </select>
-          <label style={labelStyle}>Φαινολογική φάση</label>
+          <label style={labelStyle}>{L2.pheno}</label>
           <div style={{ display:"flex", flexDirection:"column", gap:5, marginBottom:12 }}>
             {KC_TABLE[treeAge].map((s,i) => (
               <button key={i} onClick={() => setPhenoStage(i)} style={{
@@ -516,14 +516,14 @@ export default function KiwiIrrigationCalc() {
               </button>
             ))}
           </div>
-          <label style={labelStyle}>Απόσταση μεταξύ σειρών (m)</label>
+          <label style={labelStyle}>{L2.rowSpacing}</label>
           <input type="number" min={3} max={7} value={rowSpacing} step={0.5}
             onChange={e => setRowSpacing(Number(e.target.value))} style={inputStyle} />
         </div>
 
         {/* Soil */}
         <div style={cardStyle}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🪱 Τύπος Εδάφους</div>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🪱 {L2.soil}</div>
           <select value={soilType} onChange={e => setSoilType(e.target.value)} style={{ ...inputStyle, marginBottom:10 }}>
             {Object.entries(SOIL_TYPES).map(([k,v]) => (
               <option key={k} value={k}>{v.label}</option>
@@ -545,9 +545,9 @@ export default function KiwiIrrigationCalc() {
 
         {/* Irrigation system */}
         <div style={cardStyle}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>💧 Σύστημα Άρδευσης</div>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>💧 {L2.system}</div>
 
-          <label style={labelStyle}>Τύπος συστήματος</label>
+          <label style={labelStyle}>{L2.system}</label>
           <select value={irrigSystem} onChange={e => setIrrigSystem(e.target.value)}
             style={{ ...inputStyle, marginBottom:14 }}>
             {Object.entries(IRRIGATION_SYSTEMS).map(([k,v]) => (
@@ -561,7 +561,7 @@ export default function KiwiIrrigationCalc() {
               Χαρακτηριστικά Εκπομπών
             </div>
             <div style={{ fontSize:11, color:"#555", marginBottom:10, lineHeight:1.5 }}>
-              Εισάγετε το <strong>σύνολο</strong> των εκπομπών/{unit==="stremma"?"στρ.":"ha"} 
+              {L2.emittersHelp}/{unit==="stremma"?"στρ.":"ha"} 
               (όλοι οι αγωγοί μαζί). Π.χ. 2 αγωγοί × 100 σταλ./αγωγό = <strong>200 σταλ./{unit==="stremma"?"στρ.":"ha"}</strong>
             </div>
             <div style={{ display:"flex", gap:10 }}>
@@ -578,7 +578,7 @@ export default function KiwiIrrigationCalc() {
                   style={inputStyle} />
               </div>
               <div style={{ flex:1 }}>
-                <label style={labelStyle}>Παροχή / εκπομπή (L/h)</label>
+                <label style={labelStyle}>{L2.flow}</label>
                 <input type="number" min={0.5} max={80} value={emitterFlow} step={0.5}
                   onChange={e => setEmitterFlow(Number(e.target.value))} style={inputStyle} />
               </div>
@@ -598,12 +598,12 @@ export default function KiwiIrrigationCalc() {
             borderRadius:16, padding:"20px", color:"#fff", marginBottom:12,
           }}>
             <div style={{ fontSize:11, letterSpacing:"0.1em", opacity:0.65, marginBottom:12, textTransform:"uppercase" }}>
-              📊 Αποτελέσματα Ημέρας
+              📊 {L2.results}
             </div>
 
             {/* Water need */}
             <div style={{ textAlign:"center", marginBottom:18, paddingBottom:16, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
-              <div style={{ fontSize:12, opacity:0.7, marginBottom:2 }}>Νερό που χρειάζεται σήμερα</div>
+              <div style={{ fontSize:12, opacity:0.7, marginBottom:2 }}>{L2.waterNeeded}</div>
               <div style={{ fontSize:52, fontWeight:900, lineHeight:1, color:gold }}>{result.grossM3}</div>
               <div style={{ fontSize:15, opacity:0.8 }}>m³ / {result.unitLabel} / ημέρα</div>
             </div>
@@ -631,14 +631,14 @@ export default function KiwiIrrigationCalc() {
 
               {result.undersized ? (
                 <div style={{ background:"rgba(255,100,100,0.2)", borderRadius:10, padding:"12px", fontSize:13 }}>
-                  ⚠️ <strong>Ανεπαρκής παροχή συστήματος</strong><br/>
+                  ⚠️ <strong>{L2.undersized}</strong><br/>
                   Χρειάζονται {result.runTimeMin} λεπτά για να χορηγηθεί το απαιτούμενο νερό.
                   Αυξήστε τον αριθμό ή την παροχή των εκπομπών.
                 </div>
               ) : (
                 <>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-                    <span style={{ opacity:0.75, fontSize:13 }}>Συνολικός χρόνος/ημέρα</span>
+                    <span style={{ opacity:0.75, fontSize:13 }}>{L2.runtime}</span>
                     <span style={{ fontWeight:800, fontSize:18, color:gold }}>{result.runTimeMin} λεπτά</span>
                   </div>
                   {result.sessions > 1 && (
@@ -647,7 +647,7 @@ export default function KiwiIrrigationCalc() {
                         Συνιστώμενη κατανομή 
                       </div>
                       <div style={{ fontSize:16, fontWeight:800 }}>
-                        {result.sessions} × {result.perSessionMin} λεπτά / ημέρα
+                        {result.sessions} × {result.perSessionMin} λεπτά / {L2.perDay}
                       </div>
                     </div>
                   )}
@@ -676,9 +676,9 @@ export default function KiwiIrrigationCalc() {
 
             {/* Frequency */}
             <div style={{ display:"flex", justifyContent:"space-between" }}>
-              <span style={{ opacity:0.75, fontSize:13 }}>📅 Κύκλος (αποστράγγιση AFD)</span>
+              <span style={{ opacity:0.75, fontSize:13 }}>📅 {L2.cycle}</span>
               <span style={{ fontWeight:800, fontSize:15 }}>
-                {result.freq >= 999 ? "Δεν απαιτείται" : `κάθε ${result.freq} ημέρα/ες`}
+                {result.freq >= 999 ? "{L2.notNeeded}" : `{L2.every} ${result.freq} {L2.days}`}
               </span>
             </div>
           </div>
@@ -694,9 +694,9 @@ export default function KiwiIrrigationCalc() {
         {/* Stage note */}
         {phenoStage === 1 && (
           <div style={{ ...cardStyle, borderLeft:`4px solid ${gold}` }}>
-            <div style={{ fontSize:11, fontWeight:700, color:gold, textTransform:"uppercase", marginBottom:5 }}>⚠️ Κρίσιμη Φάση</div>
+            <div style={{ fontSize:11, fontWeight:700, color:gold, textTransform:"uppercase", marginBottom:5 }}>{`⚠️ ${L2.critical}`}</div>
             <div style={{ fontSize:13, lineHeight:1.6 }}>
-              <strong>Κυτταροδιαίρεση</strong> — ~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού 
+              <strong>{L2.pheno}</strong> — ~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού 
             </div>
           </div>
         )}
