@@ -626,9 +626,9 @@ export default function KiwiIrrigationCalc() {
             {/* ET stats */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16, paddingBottom:16, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               {[
-                { l:"ET₀ (Tmax)", v:result.et0+" mm/ημ" },
+                { l:"ET₀ (Tmax)", v:result.et0+" mm/d" },
                 { l:`Kc ${result.usingMeasuredKc?"(μετρημένο)":"(φάση)"}`, v:result.kc },
-                { l:"ETc καλλιέργειας",v:result.etc+" mm/ημ" },
+                { l:"ETc καλλιέργειας",v:result.etc+" mm/d" },
                 { l:"Καθαρή ανάγκη",   v:result.netMM+" mm/ημ"},
               ].map(item => (
                 <div key={item.l} style={{ background:"rgba(255,255,255,0.10)", borderRadius:9, padding:"9px 11px" }}>
@@ -693,7 +693,7 @@ export default function KiwiIrrigationCalc() {
             <div style={{ display:"flex", justifyContent:"space-between" }}>
               <span style={{ opacity:0.75, fontSize:13 }}>📅 {L2.cycle}</span>
               <span style={{ fontWeight:800, fontSize:15 }}>
-                {result.freq >= 999 ? "{L2.notNeeded}" : `{L2.every} ${result.freq} {L2.days}`}
+                {result.freq >= 999 ? L2.notNeeded : `${L2.every} ${result.freq} ${L2.days}`}
               </span>
             </div>
           </div>
