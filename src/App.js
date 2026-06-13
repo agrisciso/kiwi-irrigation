@@ -444,7 +444,7 @@ export default function KiwiIrrigationCalc() {
 
         {/* Month selector */}
         <div style={cardStyle}>
-          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>📅 Μήνας</div>
+          <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>{appLang==="el"?"📅 Μήνας":appLang==="en"?"📅 Month":appLang==="it"?"📅 Mese":"📅 Mes"}</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:5 }}>
             {[
               {m:4,l:"Απρ"},{m:5,l:"Μάι"},{m:6,l:"Ιούν"},
@@ -616,7 +616,7 @@ export default function KiwiIrrigationCalc() {
             <div style={{ textAlign:"center", marginBottom:18, paddingBottom:16, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:12, opacity:0.7, marginBottom:2 }}>{L2.waterNeeded}</div>
               <div style={{ fontSize:52, fontWeight:900, lineHeight:1, color:gold }}>{result.grossM3}</div>
-              <div style={{ fontSize:15, opacity:0.8 }}>m³ / {result.unitLabel} / ημέρα</div>
+              <div style={{ fontSize:15, opacity:0.8 }}>m³/{unit==="stremma"?(appLang==="el"?"στρ":appLang==="en"?"str":appLang==="it"?"str":"str"):"ha"}/{L2.perDay}</div>
             </div>
 
             {/* ET stats */}
@@ -643,8 +643,7 @@ export default function KiwiIrrigationCalc() {
               {result.undersized ? (
                 <div style={{ background:"rgba(255,100,100,0.2)", borderRadius:10, padding:"12px", fontSize:13 }}>
                   ⚠️ <strong>{L2.undersized}</strong><br/>
-                  Χρειάζονται {result.runTimeMin} λεπτά για να χορηγηθεί το απαιτούμενο νερό.
-                  Αυξήστε τον αριθμό ή την παροχή των εκπομπών.
+                  {appLang==="el"?`Χρειάζονται ${result.runTimeMin} λεπτά. Αυξήστε τον αριθμό ή την παροχή.`:appLang==="en"?`Needs ${result.runTimeMin} min. Increase emitter count or flow.`:appLang==="it"?`Necessita ${result.runTimeMin} min. Aumentare numero o portata.`:`Necesita ${result.runTimeMin} min. Aumente número o caudal.`}
                 </div>
               ) : (
                 <>
