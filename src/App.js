@@ -495,7 +495,7 @@ export default function KiwiIrrigationCalc() {
           <div style={{ ...cardStyle, borderLeft:`4px solid ${gold}` }}>
             <div style={{ fontSize:11, fontWeight:700, color:gold, textTransform:"uppercase", marginBottom:5 }}>⚠️ Κρίσιμη Φάση</div>
             <div style={{ fontSize:13, lineHeight:1.6 }}>
-              <strong>Κυτταροδιαίρεση</strong> — ~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού καρπού 
+              <strong>Κυτταροδιαίρεση</strong> — ~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού 
             </div>
           </div>
         )}
