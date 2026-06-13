@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect } from "react";
 
 // ─── Multilingual support ───────────────────────────────────────────────────
@@ -124,31 +125,45 @@ const KC_MONTHLY = {
 
 const KC_TABLE = {
   young: [
-    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.07, months: [3,4]    },
-    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.33, months: [5,6]    },
-    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 0.43, months: [7,8]    },
-    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.26, months: [9,10]   },
+    { labels: { el:"Βλάστηση – Ανθοφορία (Μάρ–Απρ)", en:"Budbreak – Flowering (Mar–Apr)", it:"Germogliamento – Fioritura (Mar–Apr)", es:"Brotación – Floración (Mar–Abr)" }, kc: 0.07, months: [3,4] },
+    { labels: { el:"Κυτταροδιαίρεση (Μάι–Ιούν)", en:"Cell division (May–Jun)", it:"Citochinesi (Mag–Giu)", es:"División celular (May–Jun)" }, kc: 0.33, months: [5,6] },
+    { labels: { el:"Ωρίμανση καρπού (Ιούλ–Αύγ)", en:"Fruit growth (Jul–Aug)", it:"Ingrossamento frutto (Lug–Ago)", es:"Crecimiento fruto (Jul–Ago)" }, kc: 0.43, months: [7,8] },
+    { labels: { el:"Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)", en:"Pre-harvest – Harvest (Sep–Oct)", it:"Pre-raccolta – Raccolta (Set–Ott)", es:"Pré-cosecha – Cosecha (Sep–Oct)" }, kc: 0.26, months: [9,10] },
   ],
   mature: [
-    { label: "Βλάστηση – Ανθοφορία (Μάρ–Απρ)",         kc: 0.13, months: [3,4]    },
-    { label: "Κυτταροδιαίρεση (Μάι–Ιούν)",              kc: 0.65, months: [5,6]    },
-    { label: "Ωρίμανση καρπού (Ιούλ–Αύγ)",             kc: 0.85, months: [7,8]    },
-    { label: "Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)",     kc: 0.52, months: [9,10]   },
+    { labels: { el:"Βλάστηση – Ανθοφορία (Μάρ–Απρ)", en:"Budbreak – Flowering (Mar–Apr)", it:"Germogliamento – Fioritura (Mar–Apr)", es:"Brotación – Floración (Mar–Abr)" }, kc: 0.13, months: [3,4] },
+    { labels: { el:"Κυτταροδιαίρεση (Μάι–Ιούν)", en:"Cell division (May–Jun)", it:"Citochinesi (Mag–Giu)", es:"División celular (May–Jun)" }, kc: 0.65, months: [5,6] },
+    { labels: { el:"Ωρίμανση καρπού (Ιούλ–Αύγ)", en:"Fruit growth (Jul–Aug)", it:"Ingrossamento frutto (Lug–Ago)", es:"Crecimiento fruto (Jul–Ago)" }, kc: 0.85, months: [7,8] },
+    { labels: { el:"Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)", en:"Pre-harvest – Harvest (Sep–Oct)", it:"Pre-raccolta – Raccolta (Set–Ott)", es:"Pré-cosecha – Cosecha (Sep–Oct)" }, kc: 0.52, months: [9,10] },
   ],
 };
 
-const SOIL_TYPES = {
-  sandy_loam: { label: "Αμμοαργιλοπηλώδες (FAS) – ελαφρύ", fc: 28, wp: 12, bulk: 1.45 },
-  clay_loam:  { label: "Αργιλοπηλώδες (FA) – μέσο",        fc: 39, wp: 19, bulk: 1.39 },
-  clay:       { label: "Αργιλώδες (A) – βαρύ",             fc: 52, wp: 24, bulk: 1.35 },
-  loam:       { label: "Πηλώδες (F) – μέσο-βαρύ",          fc: 35, wp: 16, bulk: 1.40 },
+const SOIL_TYPES_DATA = {
+  sandy_loam: { fc: 28, wp: 12, bulk: 1.45 },
+  clay_loam:  { fc: 39, wp: 19, bulk: 1.39 },
+  clay:       { fc: 52, wp: 24, bulk: 1.35 },
+  loam:       { fc: 35, wp: 16, bulk: 1.40 },
 };
 
-const IRRIGATION_SYSTEMS = {
-  drip_1dl:  { label: "Σταγόνα – 1 αγωγός/σειρά",   efficiency: 0.90, wetted_width: 0.5 },
-  drip_2dl:  { label: "Σταγόνα – 2 αγωγοί/σειρά",   efficiency: 0.90, wetted_width: 1.0 },
-  drip_4dl:  { label: "Σταγόνα – 4 αγωγοί/σειρά",   efficiency: 0.90, wetted_width: 2.0 },
-  sprinkler: { label: "Μικρο-εκτοξευτήρας (Sprinkler)", efficiency: 0.82, wetted_width: 2.0 },
+const SOIL_LABELS = {
+  el: { sandy_loam: "Αμμοαργιλοπηλώδες (FAS) – ελαφρύ", clay_loam: "Αργιλοπηλώδες (FA) – μέσο", clay: "Αργιλώδες (A) – βαρύ", loam: "Πηλώδες (F) – μέσο-βαρύ" },
+  en: { sandy_loam: "Sandy Clay Loam (light)", clay_loam: "Clay Loam (medium)", clay: "Clay (heavy)", loam: "Loam (medium-heavy)" },
+  it: { sandy_loam: "Franco Argilloso Sabbioso (leggero)", clay_loam: "Franco Argilloso (medio)", clay: "Argilloso (pesante)", loam: "Franco (medio-pesante)" },
+  es: { sandy_loam: "Franco Arcillo Arenoso (ligero)", clay_loam: "Franco Arcilloso (medio)", clay: "Arcilloso (pesado)", loam: "Franco (medio-pesado)" },
+};
+
+const IRRIGATION_SYSTEMS_DATA = {
+  drip_1dl:  { efficiency: 0.90, wetted_width: 0.5 },
+  drip_2dl:  { efficiency: 0.90, wetted_width: 1.0 },
+  drip_4dl:  { efficiency: 0.90, wetted_width: 2.0 },
+  sprinkler: { efficiency: 0.82, wetted_width: 2.0 },
+};
+
+const IRRIG_LABELS = {
+  el: { drip_1dl: "Σταγόνα – 1 αγωγός/σειρά | αποδ. 90%", drip_2dl: "Σταγόνα – 2 αγωγοί/σειρά | αποδ. 90%", drip_4dl: "Σταγόνα – 4 αγωγοί/σειρά | αποδ. 90%", sprinkler: "Μικρο-εκτοξευτήρας (Sprinkler) | αποδ. 82%" },
+  en: { drip_1dl: "Drip – 1 line/row | eff. 90%", drip_2dl: "Drip – 2 lines/row | eff. 90%", drip_4dl: "Drip – 4 lines/row | eff. 90%", sprinkler: "Micro-sprinkler | eff. 82%" },
+  it: { drip_1dl: "Goccia – 1 ala/fila | eff. 90%", drip_2dl: "Goccia – 2 ali/fila | eff. 90%", drip_4dl: "Goccia – 4 ali/fila | eff. 90%", sprinkler: "Micro-sprinkler | eff. 82%" },
+  es: { drip_1dl: "Goteo – 1 línea/fila | ef. 90%", drip_2dl: "Goteo – 2 líneas/fila | ef. 90%", drip_4dl: "Goteo – 4 líneas/fila | ef. 90%", sprinkler: "Micro-aspersor | ef. 82%" },
 };
 
 // ET0 from Tmax — calibrated to match measured monthly averages:
@@ -217,8 +232,8 @@ export default function KiwiIrrigationCalc() {
     [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,unit,treeAge,phenoStage,rainfall,rowSpacing]);
 
   function calculate() {
-    const soil = SOIL_TYPES[soilType];
-    const sys  = IRRIGATION_SYSTEMS[irrigSystem];
+    const soil = SOIL_TYPES_DATA[soilType];
+    const sys  = IRRIGATION_SYSTEMS_DATA[irrigSystem];
     const kcEntry = KC_TABLE[treeAge][phenoStage];
 
     // Use measured monthly Kc if month is in table, else use stage average
@@ -296,7 +311,7 @@ export default function KiwiIrrigationCalc() {
       sessions,
       perSessionMin: perSessionMin.toFixed(0),
       undersized,
-      stage: kcEntry.label,
+      stage: kcEntry.labels ? kcEntry.labels[appLang] : kcEntry.label,
       warning: tmax > 38
         ? "⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης."
         : null,
@@ -512,7 +527,7 @@ export default function KiwiIrrigationCalc() {
                 fontSize:13, color:darkGreen, fontWeight:phenoStage===i ? 700 : 400,
               }}>
                 <span style={{ fontWeight:700, color:stageColors[i] }}>Kc {s.kc.toFixed(2)}</span>
-                {"  "}{s.label}
+                {"  "}{s.labels[appLang]}
               </button>
             ))}
           </div>
@@ -525,8 +540,8 @@ export default function KiwiIrrigationCalc() {
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🪱 {L2.soil}</div>
           <select value={soilType} onChange={e => setSoilType(e.target.value)} style={{ ...inputStyle, marginBottom:10 }}>
-            {Object.entries(SOIL_TYPES).map(([k,v]) => (
-              <option key={k} value={k}>{v.label}</option>
+            {Object.entries(SOIL_TYPES_DATA).map(([k]) => (
+              <option key={k} value={k}>{SOIL_LABELS[appLang][k]}</option>
             ))}
           </select>
           <div style={{ display:"flex", gap:8 }}>
@@ -550,8 +565,8 @@ export default function KiwiIrrigationCalc() {
           <label style={labelStyle}>{L2.system}</label>
           <select value={irrigSystem} onChange={e => setIrrigSystem(e.target.value)}
             style={{ ...inputStyle, marginBottom:14 }}>
-            {Object.entries(IRRIGATION_SYSTEMS).map(([k,v]) => (
-              <option key={k} value={k}>{v.label} | αποδ. {(v.efficiency*100).toFixed(0)}%</option>
+            {Object.entries(IRRIGATION_SYSTEMS_DATA).map(([k]) => (
+              <option key={k} value={k}>{IRRIG_LABELS[appLang][k]}</option>
             ))}
           </select>
 
@@ -561,7 +576,7 @@ export default function KiwiIrrigationCalc() {
               Χαρακτηριστικά Εκπομπών
             </div>
             <div style={{ fontSize:11, color:"#555", marginBottom:10, lineHeight:1.5 }}>
-              {L2.emittersHelp}/{unit==="stremma"?"στρ.":"ha"} 
+              {appLang==="el"?"Εισάγετε το σύνολο των εκπομπών (όλοι οι αγωγοί μαζί).":appLang==="en"?"Enter total emitters across ALL driplines.":appLang==="it"?"Inserire il totale degli erogatori (tutte le linee).":"Introducir el total de emisores (todas las líneas)."}/{unit==="stremma"?"στρ.":"ha"} 
               (όλοι οι αγωγοί μαζί). Π.χ. 2 αγωγοί × 100 σταλ./αγωγό = <strong>200 σταλ./{unit==="stremma"?"στρ.":"ha"}</strong>
             </div>
             <div style={{ display:"flex", gap:10 }}>
@@ -696,7 +711,7 @@ export default function KiwiIrrigationCalc() {
           <div style={{ ...cardStyle, borderLeft:`4px solid ${gold}` }}>
             <div style={{ fontSize:11, fontWeight:700, color:gold, textTransform:"uppercase", marginBottom:5 }}>{`⚠️ ${L2.critical}`}</div>
             <div style={{ fontSize:13, lineHeight:1.6 }}>
-              <strong>{L2.pheno}</strong> — ~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού 
+              <strong>{L2.pheno}</strong> — {appLang === "el" ? "~70% του ολικού ETc. Ακόμη και βραχύχρονη έλλειψη νερού μειώνει τον αριθμό κυττάρων και το τελικό μέγεθος καρπού." : appLang === "en" ? "~70% of total ETc. Even brief water deficit reduces cell number and final fruit size." : appLang === "it" ? "~70% dell'ETc totale. Anche un breve stress idrico riduce il numero di cellule e la pezzatura finale." : "~70% del ETc total. Incluso un breve déficit hídrico reduce el número de células y el tamaño final del fruto."} 
             </div>
           </div>
         )}
