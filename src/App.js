@@ -227,8 +227,7 @@ export default function KiwiIrrigationCalc() {
   const [rowSpacing,    setRowSpacing]    = useState(5.0);
   const [result,        setResult]        = useState(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { calculate(); },
+  useEffect(() => { calculate(); }, // eslint-disable-line react-hooks/exhaustive-deps
     [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,unit,treeAge,phenoStage,rainfall,rowSpacing]);
 
   function calculate() {
@@ -241,7 +240,6 @@ export default function KiwiIrrigationCalc() {
     const kc = measuredKc !== null ? measuredKc : kcEntry.kc;
 
     // Use measured monthly ET0 reference if available, else estimate from Tmax
-    const refET0 = getRefET0(month);
     // Blend: if user's Tmax diverges from monthly avg, adjust proportionally
     // ET0 from Tmax (calibrated to measured monthly averages)
     const et0 = estimateET0(tmax);
@@ -287,7 +285,6 @@ export default function KiwiIrrigationCalc() {
     // Display conversion
     const factor   = unit === "stremma" ? 0.1 : 1.0;
     const unitLabel = unit === "stremma" ? "στρέμμα" : "εκτάριο";
-    const emittersDisplay = unit === "stremma"
       ? Math.round(emittersHa / 10)
       : emittersHa;
 
