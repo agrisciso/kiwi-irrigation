@@ -106,6 +106,7 @@ export default function KiwiIrrigationCalc() {
   const [rowSpacing,    setRowSpacing]    = useState(5.0);
   const [result,        setResult]        = useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { calculate(); },
     [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,unit,treeAge,phenoStage,rainfall,rowSpacing]);
 
@@ -121,8 +122,7 @@ export default function KiwiIrrigationCalc() {
     // Use measured monthly ET0 reference if available, else estimate from Tmax
     const refET0 = getRefET0(month);
     // Blend: if user's Tmax diverges from monthly avg, adjust proportionally
-    const baseET0 = refET0 !== null ? refET0 : estimateET0(tmax);
-    // Tmax-based adjustment: normalize against expected Tmax for that month
+    // ET0 from Tmax (calibrated to measured monthly averages)
     const et0 = estimateET0(tmax);
     const etc  = et0 * kc;
 
@@ -198,10 +198,6 @@ export default function KiwiIrrigationCalc() {
   }
 
   // Sync displayed emitters input with unit
-  const emittersDisplayed = unit === "stremma"
-    ? Math.round(emittersHa / 10)
-    : emittersHa;
-
   return (
     <div style={{ minHeight:"100vh", background:cream, fontFamily:"'Inter','Segoe UI',sans-serif", color:darkGreen }}>
 
@@ -246,7 +242,7 @@ export default function KiwiIrrigationCalc() {
               const isSelected = month === m;
               return (
                 <button key={m} onClick={() => setMonth(m)} style={{
-                  padding:"7px 2px", borderRadius:8, border:"none", cursor:"pointer",
+                  padding:"7px 2px", borderRadius:8, cursor:"pointer",
                   background: isSelected ? darkGreen : "#fff",
                   color: isSelected ? "#fff" : darkGreen,
                   fontWeight: isSelected ? 800 : 400,
