@@ -369,7 +369,7 @@ export default function KiwiIrrigationCalc() {
                   Σύνολο εκπομπών /{unit==="stremma"?"στρ.":"ha"}
                 </label>
                 <input type="number" min={10} max={unit==="stremma"?500:5000}
-                  value={emittersDisplayed}
+                  value={unit === "stremma" ? Math.round(emittersHa / 10) : emittersHa}
                   onChange={e => {
                     const v = Number(e.target.value);
                     setEmittersHa(unit==="stremma" ? v*10 : v);
