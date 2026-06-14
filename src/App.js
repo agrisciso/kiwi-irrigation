@@ -271,23 +271,25 @@ export default function KiwiIrrigationCalc() {
     const rawMM = RAW / 10;
     const freq = netMM > 0 ? Math.max(1, Math.round(rawMM / netMM)) : 999;
 
-    // ── Run-time calculation ─────────────────────────────────────────────
-    // Total system flow [m³/ha/h] = total emitters × L/h per emitter
-    const systemFlowM3HaH = (emittersHa * emitterFlow) / 1000;
+    // Display conversion factor (1 ha = 10 stremma)
+    const factor = activeUnit === "stremma" ? 0.1 : 1.0;
 
-    // Hours needed to deliver grossM3Ha with this system
-    const runTimeH   = systemFlowM3HaH > 0 ? grossM3Ha / systemFlowM3HaH : 0;
+    // ── Run-time calculation ─────────────────────────────────────────────
+    // System flow per unit area
+    const systemFlowM3HaH = (emittersHa * emitterFlow) / 1000;
+    const systemFlowUnit  = systemFlowM3HaH * factor;
+
+    // Hours to irrigate one unit of area
+    const grossUnit  = grossM3Ha * factor;
+    const runTimeH   = systemFlowUnit > 0 ? grossUnit / systemFlowUnit : 0;
     const runTimeMin = runTimeH * 60;
 
-    // Recommended sessions per day (Dichio 2023: 2-3 interventions/day)
+    // Recommended sessions per day
     const sessions = runTimeH > 3 ? 3 : runTimeH > 1.5 ? 2 : 1;
     const perSessionMin = runTimeMin / sessions;
 
-    // Undersized system flag
+    // Undersized flag
     const undersized = runTimeH > 12;
-
-    // Display conversion
-    const factor   = activeUnit === "stremma" ? 0.1 : 1.0;
     const unitLabel = activeUnit === "stremma" ? (appLang==="el"?"στρέμμα":appLang==="en"?"stremma":appLang==="it"?"stremma":"estrémma") : (appLang==="el"?"εκτάριο":appLang==="en"?"hectare":appLang==="it"?"ettaro":"hectárea");
 
     const monthNames = ["","Ιαν","Φεβ","Μάρ","Απρ","Μάι","Ιούν","Ιούλ","Αύγ","Σεπ","Οκτ","Νοε","Δεκ"];
@@ -300,7 +302,7 @@ export default function KiwiIrrigationCalc() {
       netMM: netMM.toFixed(1),
       grossM3:    (grossM3Ha * factor).toFixed(1),
       grossM3Ha:  grossM3Ha.toFixed(1),
-      systemFlowDisplay: (systemFlowM3HaH * factor).toFixed(2),
+      systemFlowDisplay: systemFlowUnit.toFixed(2),
       unitLabel, factor,
       AW:  (AW  * factor).toFixed(0),
       RAW: (RAW * factor).toFixed(0),
