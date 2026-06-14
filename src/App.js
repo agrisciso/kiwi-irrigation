@@ -438,7 +438,7 @@ export default function KiwiIrrigationCalc() {
               color:unit===u ? "#fff" : darkGreen,
               fontWeight:700, fontSize:13, transition:"all 0.2s",
               boxShadow:unit===u ? "0 2px 8px rgba(26,74,46,0.2)" : "0 1px 3px rgba(0,0,0,0.07)",
-            }}>{u==="stremma" ? (appLang==="el"?"/ στρέμμα":appLang==="en"?"/ stremma":appLang==="it"?"/ stremma":"/ estrémma") : (appLang==="el"?"/ εκτάριο":appLang==="en"?"/ hectare":appLang==="it"?"/ ettaro":"/ hectárea")}</button>
+            }}>{u==="stremma" ? (appLang==="el"?"Στρέμμα":"Stremma") : (appLang==="el"?"Εκτάριο":"Hectare")}</button>
           ))}
         </div>
 
@@ -582,7 +582,7 @@ export default function KiwiIrrigationCalc() {
             <div style={{ display:"flex", gap:10 }}>
               <div style={{ flex:1 }}>
                 <label style={labelStyle}>
-                  Σύνολο εκπομπών /{unit==="stremma"?"στρ.":"ha"}
+                  {appLang==="el"?"Σύνολο εκπομπών":appLang==="en"?"Total emitters":appLang==="it"?"Totale erogatori":"Total emisores"} /{unit==="stremma"?"στρ.":"ha"}
                 </label>
                 <input type="number" min={10} max={unit==="stremma"?500:5000}
                   value={unit === "stremma" ? Math.round(emittersHa / 10) : emittersHa}
@@ -641,7 +641,7 @@ export default function KiwiIrrigationCalc() {
             {/* Operational — this is what changes with emitters */}
             <div style={{ marginBottom:14, paddingBottom:14, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:11, opacity:0.6, textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:10 }}>
-                ⏱️ Χρόνος Λειτουργίας Συστήματος
+                {appLang==="el"?"⏱️ Χρόνος Λειτουργίας":"⏱️ "+(appLang==="en"?"System Run Time":appLang==="it"?"Tempo Funzionamento":"Tiempo Funcionamiento")}
               </div>
 
               {result.undersized ? (
@@ -672,7 +672,7 @@ export default function KiwiIrrigationCalc() {
             {/* Soil water */}
             <div style={{ marginBottom:14, paddingBottom:14, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:11, opacity:0.6, textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:8 }}>
-                Παράμετροι Εδάφους (Vs, 0–50 cm)
+                {appLang==="el"?"Παράμετροι Εδάφους (Vs, 0–50cm)":appLang==="en"?"Soil Parameters (Vs, 0–50cm)":appLang==="it"?"Parametri Suolo (Vs, 0–50cm)":"Parámetros Suelo (Vs, 0–50cm)"}
               </div>
               <div style={{ display:"flex", gap:6 }}>
                 {[
