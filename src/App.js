@@ -231,11 +231,10 @@ export default function KiwiIrrigationCalc() {
   // Mark dirty when inputs change
   useEffect(() => { setCalculated(false); }, [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,treeAge,phenoStage,rainfall,rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
   // Unit change: recalculate display immediately without resetting button
-  useEffect(() => { if(calculated) { calculate(); } }, [unit]); // eslint-disable-line react-hooks/exhaustive-deps
+  function runCalculate() { calculate(unit); setCalculated(true); }
 
-  function runCalculate() { calculate(); setCalculated(true); }
-
-  function calculate() {
+  function calculate(overrideUnit) {
+    const activeUnit = overrideUnit ?? unit;
     const soil = SOIL_TYPES_DATA[soilType];
     const sys  = IRRIGATION_SYSTEMS_DATA[irrigSystem];
     const kcEntry = KC_TABLE[treeAge][phenoStage];
@@ -288,8 +287,8 @@ export default function KiwiIrrigationCalc() {
     const undersized = runTimeH > 12;
 
     // Display conversion
-    const factor   = unit === "stremma" ? 0.1 : 1.0;
-    const unitLabel = unit === "stremma" ? (appLang==="el"?"στρέμμα":appLang==="en"?"stremma":appLang==="it"?"stremma":"estrémma") : (appLang==="el"?"εκτάριο":appLang==="en"?"hectare":appLang==="it"?"ettaro":"hectárea");
+    const factor   = activeUnit === "stremma" ? 0.1 : 1.0;
+    const unitLabel = activeUnit === "stremma" ? (appLang==="el"?"στρέμμα":appLang==="en"?"stremma":appLang==="it"?"stremma":"estrémma") : (appLang==="el"?"εκτάριο":appLang==="en"?"hectare":appLang==="it"?"ettaro":"hectárea");
 
     const monthNames = ["","Ιαν","Φεβ","Μάρ","Απρ","Μάι","Ιούν","Ιούλ","Αύγ","Σεπ","Οκτ","Νοε","Δεκ"];
     setResult({
@@ -444,7 +443,7 @@ export default function KiwiIrrigationCalc() {
         {/* Unit toggle */}
         <div style={{ display:"flex", gap:8, marginBottom:14 }}>
           {["stremma","hectare"].map(u => (
-            <button key={u} onClick={() => setUnit(u)} style={{
+            <button key={u} onClick={() => { setUnit(u); if(result) { calculate(u); } }} style={{
               flex:1, padding:"9px 0", borderRadius:8, border:"none", cursor:"pointer",
               background:unit===u ? darkGreen : "#fff",
               color:unit===u ? "#fff" : darkGreen,
