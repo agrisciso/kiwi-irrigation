@@ -211,20 +211,37 @@ const cardStyle = {
   border:"1px solid #d6ead9",
 };
 
+
+// ─── Persist inputs to localStorage ────────────────────────────────────────
+const IRRIG_STORAGE_KEY = 'agrisci_irrigation_inputs';
+
+function loadSaved(key, defaultVal) {
+  try {
+    const s = localStorage.getItem(IRRIG_STORAGE_KEY);
+    if (!s) return defaultVal;
+    const d = JSON.parse(s);
+    return key in d ? d[key] : defaultVal;
+  } catch { return defaultVal; }
+}
+
+function saveInputs(data) {
+  try { localStorage.setItem(IRRIG_STORAGE_KEY, JSON.stringify(data)); } catch {}
+}
+
 export default function KiwiIrrigationCalc() {
-  const [appLang,       setAppLang]       = useState("el");
+  const [appLang,       setAppLang]       = useState(() => loadSaved("appLang", "el"));
   const L2 = LANGS[appLang];
-  const [tmax,          setTmax]          = useState(35);
-  const [month,         setMonth]         = useState(7); // 1-12, default July
-  const [soilType,      setSoilType]      = useState("clay_loam");
-  const [irrigSystem,   setIrrigSystem]   = useState("drip_2dl");
-  const [emittersHa,    setEmittersHa]    = useState(2000);
-  const [emitterFlow,   setEmitterFlow]   = useState(2.0);
-  const [unit,          setUnit]          = useState("stremma");
-  const [treeAge,       setTreeAge]       = useState("mature");
-  const [phenoStage,    setPhenoStage]    = useState(2);
-  const [rainfall,      setRainfall]      = useState(0);
-  const [rowSpacing,    setRowSpacing]    = useState(5.0);
+  const [tmax,          setTmax]          = useState(() => (parseInt(loadSaved("tmax", 35)) || 35));
+  const [month,         setMonth]         = useState(() => (parseInt(loadSaved("month", 7)) || 7)); // 1-12, default July
+  const [soilType,      setSoilType]      = useState(() => loadSaved("soilType", "clay_loam"));
+  const [irrigSystem,   setIrrigSystem]   = useState(() => loadSaved("irrigSystem", "drip_2dl"));
+  const [emittersHa,    setEmittersHa]    = useState(() => (parseInt(loadSaved("emittersHa", 2000)) || 2000));
+  const [emitterFlow,   setEmitterFlow]   = useState(() => parseFloat(loadSaved("emitterFlow", 2.0) ?? 2.0));
+  const [unit,          setUnit]          = useState(() => loadSaved("unit", "stremma"));
+  const [treeAge,       setTreeAge]       = useState(() => loadSaved("treeAge", "mature"));
+  const [phenoStage,    setPhenoStage]    = useState(() => (parseInt(loadSaved("phenoStage", 2)) || 2));
+  const [rainfall,      setRainfall]      = useState(() => (parseInt(loadSaved("rainfall", 0)) || 0));
+  const [rowSpacing,    setRowSpacing]    = useState(() => parseFloat(loadSaved("rowSpacing", 5.0) ?? 5.0));
   const [result,        setResult]        = useState(null);
 
   const [calculated, setCalculated] = useState(false);
@@ -232,6 +249,11 @@ export default function KiwiIrrigationCalc() {
   useEffect(() => { setCalculated(false); }, [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,treeAge,phenoStage,rainfall,rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
   // Unit change: recalculate display immediately without resetting button
   function runCalculate() { calculate(unit); setCalculated(true); }
+
+  // Save inputs whenever they change
+  useEffect(() => {
+    saveInputs({ appLang, tmax, month, soilType, irrigSystem, emittersHa, emitterFlow, unit, treeAge, phenoStage, rainfall, rowSpacing });
+  }, [appLang, tmax, month, soilType, irrigSystem, emittersHa, emitterFlow, unit, treeAge, phenoStage, rainfall, rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function calculate(overrideUnit) {
     const activeUnit = overrideUnit ?? unit;
