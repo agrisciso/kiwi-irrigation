@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 import { useState, useEffect } from "react";
+import { supabase, signOut } from "./agrisci-auth";
+import LoginGate from "./LoginGate";
 
 // ─── Multilingual support ───────────────────────────────────────────────────
 const LANGS = {
@@ -215,6 +217,7 @@ const gold      = "#C9A84C";
 const cream     = "#F5F0E8";
 const creamDark = "#EDE6D8";
 const textMuted = "#5A7A64";
+const cream = "#F5F0E8";
 const lightGreen = "#EAF3EC";
 const stageColors = ["#2E7D52","#C8973A","#1A4A2E","#6b9e7a"];
 
@@ -383,87 +386,37 @@ export default function KiwiIrrigationCalc() {
 
   // Sync displayed emitters input with unit
   // Password gate
-  const [unlocked, setUnlocked] = useState(() => {
-    try { return localStorage.getItem("agrisci_pw") === "agrisci2024"; } catch { return false; }
-  });
-  const [pwInput, setPwInput] = useState("");
-  const [pwError, setPwError] = useState(false);
+  const [session, setSession] = useState(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
-  const PASSWORD = "agrisci2024";
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoadingAuth(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
-  function doUnlock() {
-    try { localStorage.setItem("agrisci_pw", PASSWORD); } catch {}
-    setUnlocked(true);
+  if (loadingAuth) {
+    return (
+      <div style={{ minHeight:"100vh", background:"#0D2818", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <div style={{ color:"#C9A84C", fontSize:14, fontWeight:600 }}>...</div>
+      </div>
+    );
   }
 
-  if (!unlocked) {
+  if (!session) {
     return (
-      <div style={{
-        minHeight:"100vh", background:darkGreen,
-        fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",
-        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24,
-      }}>
-        <div style={{ display:"flex", gap:6, marginBottom:32 }}>
-          {["el","en","it","es"].map(l => (
-            <button key={l} onClick={() => setAppLang(l)} style={{
-              padding:"4px 10px", borderRadius:20,
-              border:`1.5px solid ${appLang===l ? gold : gold+"44"}`,
-              background:appLang===l ? gold : "transparent",
-              color:appLang===l ? darkGreen : gold,
-              fontSize:11, fontWeight:700, cursor:"pointer",
-            }}>
-              {l==="el"?"🇬🇷 ΕΛ":l==="en"?"🇬🇧 EN":l==="it"?"🇮🇹 IT":"🇪🇸 ES"}
-            </button>
-          ))}
-        </div>
-        <div style={{
-          background:cream, borderRadius:20, padding:"36px 28px",
-          maxWidth:360, width:"100%", textAlign:"center",
-        }}>
-          <div style={{
-            width:80, height:80, borderRadius:20, background:darkGreen,
-            margin:"0 auto 20px", display:"flex", alignItems:"center", justifyContent:"center",
-          }}>
-            <IrrigationIcon size={56}/>
-          </div>
-          <div style={{ fontSize:11, color:gold, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:6 }}>
-            AgriSci Solutions
-          </div>
-          <div style={{ fontSize:20, fontWeight:800, color:"#1A2E1E", marginBottom:6 }}>
-            {L2.pwTitle || L2.title}
-          </div>
-          <div style={{ fontSize:13, color:textMuted, marginBottom:28 }}>
-            {L2.pwSubtitle || L2.subtitle}
-          </div>
-          <input
-            type="password" placeholder={L2.password} value={pwInput}
-            onChange={e => { setPwInput(e.target.value); setPwError(false); }}
-            onKeyDown={e => { if (e.key==="Enter") { if(pwInput===PASSWORD) doUnlock(); else setPwError(true); }}}
-            style={{
-              width:"100%", padding:"12px 16px", borderRadius:10,
-              border:`2px solid ${pwError ? "#C0392B" : creamDark}`,
-              background:"#fff", fontSize:16, color:"#1A2E1E",
-              outline:"none", boxSizing:"border-box", marginBottom:8,
-              textAlign:"center", letterSpacing:"0.1em",
-            }}
-          />
-          {pwError && <div style={{ color:"#C0392B", fontSize:12, marginBottom:8, fontWeight:600 }}>{L2.wrongPw}</div>}
-          <button
-            onClick={() => { if(pwInput===PASSWORD) doUnlock(); else setPwError(true); }}
-            style={{
-              width:"100%", padding:"13px", borderRadius:10, background:darkGreen,
-              color:gold, border:"none", fontSize:15, fontWeight:800,
-              cursor:"pointer", letterSpacing:"0.05em", marginTop:4,
-            }}
-          >{L2.enter}</button>
-          <div style={{ marginTop:24, fontSize:11, color:textMuted, lineHeight:1.8 }}>
-            {L2.footerCTA}{" "}
-            <a href="https://agrisci-solutions.com/#tools" style={{ color:"#2D5A3D", fontWeight:600 }}>
-              agrisci-solutions.com
-            </a>
-          </div>
-        </div>
-      </div>
+      <LoginGate
+        onLogin={setSession}
+        appTitle={L2.title}
+        appIcon={<IrrigationIcon size={56}/>}
+        lang={appLang}
+        setLang={setAppLang}
+      />
     );
   }
 
