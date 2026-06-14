@@ -311,9 +311,7 @@ export default function KiwiIrrigationCalc() {
       perSessionMin: perSessionMin.toFixed(0),
       undersized,
       stage: kcEntry.labels ? kcEntry.labels[appLang] : kcEntry.label,
-      warning: tmax > 38
-        ? (appLang==="el"?"⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης.":appLang==="en"?"⚠️ High temperature — risk of water stress. Prioritise morning irrigation.":appLang==="it"?"⚠️ Temperatura elevata — rischio stress idrico. Dare priorità all'irrigazione mattutina.":"⚠️ Temperatura alta — riesgo de estrés hídrico. Priorizar el riego matutino.")
-        : null,
+      highTemp: tmax > 38,
     });
   }
 
@@ -725,9 +723,9 @@ export default function KiwiIrrigationCalc() {
         )}
 
         {/* Warnings */}
-        {result?.warning && (
+        {result?.highTemp && (
           <div style={{ background:"#fff8e6", border:`1.5px solid ${gold}`, borderRadius:10, padding:"11px 14px", fontSize:13, color:"#7a5a00", marginBottom:12 }}>
-            {result.warning}
+            {appLang==="el"?"⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης.":appLang==="en"?"⚠️ High temperature — risk of water stress. Prioritise morning irrigation.":appLang==="it"?"⚠️ Temperatura elevata — rischio stress idrico. Dare priorità all'irrigazione mattutina.":"⚠️ Temperatura alta — riesgo de estrés hídrico. Priorizar el riego matutino."}
           </div>
         )}
 
