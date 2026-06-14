@@ -650,7 +650,7 @@ export default function KiwiIrrigationCalc() {
                 <>
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
                     <span style={{ opacity:0.75, fontSize:13 }}>{L2.runtime}</span>
-                    <span style={{ fontWeight:800, fontSize:18, color:gold }}>{result.runTimeMin} λεπτά</span>
+                    <span style={{ fontWeight:800, fontSize:18, color:gold }}>{result.runTimeMin} {appLang==="el"?"λεπτά":appLang==="it"?"min":"min"}</span>
                   </div>
                   {result.sessions > 1 && (
                     <div style={{ background:"rgba(255,255,255,0.10)", borderRadius:9, padding:"10px 12px" }}>
@@ -658,7 +658,7 @@ export default function KiwiIrrigationCalc() {
                         Συνιστώμενη κατανομή 
                       </div>
                       <div style={{ fontSize:16, fontWeight:800 }}>
-                        {result.sessions} × {result.perSessionMin} λεπτά / {L2.perDay}
+                        {result.sessions} × {result.perSessionMin} {appLang==="el"?"λεπτά":"min"} / {L2.perDay}
                       </div>
                     </div>
                   )}
