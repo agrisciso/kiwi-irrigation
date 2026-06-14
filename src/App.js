@@ -491,17 +491,14 @@ export default function KiwiIrrigationCalc() {
                 }}>
                   <div>{l}</div>
                   <div style={{ fontSize:9, opacity: isSelected ? 0.85 : 0.55, marginTop:1 }}>
-                    Kc {ref?.kc.toFixed(1)}
+                    
                   </div>
                 </button>
               );
             });})()}
           </div>
           <div style={{ marginTop:10, display:"flex", gap:8 }}>
-            <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
-              <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{appLang==="el"?"Kc μετρημένο":appLang==="en"?"Measured Kc":appLang==="it"?"Kc misurato":"Kc medido"}</div>
-              <div style={{ fontSize:20, fontWeight:800 }}>{KC_MONTHLY[month]?.kc.toFixed(2) ?? "—"}</div>
-            </div>
+            
             <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
               <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{appLang==="el"?"ET₀ αναφοράς (mm/ημ)":appLang==="en"?"ET₀ reference (mm/day)":appLang==="it"?"ET₀ riferimento (mm/g)":"ET₀ referencia (mm/día)"}</div>
               <div style={{ fontSize:20, fontWeight:800 }}>{KC_MONTHLY[month]?.et0ref.toFixed(1) ?? "—"}</div>
@@ -549,7 +546,7 @@ export default function KiwiIrrigationCalc() {
                 background:phenoStage===i ? `${stageColors[i]}18` : "#fff",
                 fontSize:13, color:darkGreen, fontWeight:phenoStage===i ? 700 : 400,
               }}>
-                <span style={{ fontWeight:700, color:stageColors[i] }}>Kc {s.kc.toFixed(2)}</span>
+                
                 {"  "}{s.labels[appLang]}
               </button>
             ))}
