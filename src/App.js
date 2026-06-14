@@ -215,7 +215,6 @@ const gold      = "#C9A84C";
 const cream     = "#F5F0E8";
 const creamDark = "#EDE6D8";
 const textMuted = "#5A7A64";
-const cream = "#F5F0E8";
 const lightGreen = "#EAF3EC";
 const stageColors = ["#2E7D52","#C8973A","#1A4A2E","#6b9e7a"];
 
