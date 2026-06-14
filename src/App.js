@@ -575,10 +575,7 @@ export default function KiwiIrrigationCalc() {
             <div style={{ fontSize:12, fontWeight:700, color:midGreen, marginBottom:8 }}>
               {appLang==="el"?"Χαρακτηριστικά Εκπομπών":appLang==="en"?"Emitter Settings":appLang==="it"?"Impostazioni Erogatori":"Configuración Emisores"}
             </div>
-            <div style={{ fontSize:11, color:"#555", marginBottom:10, lineHeight:1.5 }}>
-              {appLang==="el"?"Εισάγετε το σύνολο (όλοι οι αγωγοί μαζί).":appLang==="en"?"Total across ALL driplines.":appLang==="it"?"Totale per tutte le linee.":"Total de todas las líneas."}/{unit==="stremma"?"στρ.":"ha"} 
-              (όλοι οι αγωγοί μαζί). Π.χ. 2 αγωγοί × 100 σταλ./αγωγό = <strong>200 σταλ./{unit==="stremma"?"στρ.":"ha"}</strong>
-            </div>
+    
             <div style={{ display:"flex", gap:10 }}>
               <div style={{ flex:1 }}>
                 <label style={labelStyle}>
