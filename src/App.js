@@ -446,10 +446,14 @@ export default function KiwiIrrigationCalc() {
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>{appLang==="el"?"📅 Μήνας":appLang==="en"?"📅 Month":appLang==="it"?"📅 Mese":"📅 Mes"}</div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(7,1fr)", gap:5 }}>
-            {[
-              {m:4,l:"Απρ"},{m:5,l:"Μάι"},{m:6,l:"Ιούν"},
-              {m:7,l:"Ιούλ"},{m:8,l:"Αύγ"},{m:9,l:"Σεπ"},{m:10,l:"Οκτ"}
-            ].map(({m,l}) => {
+            {(()=>{
+              const ML = {
+                el:[{m:4,l:"Απρ"},{m:5,l:"Μάι"},{m:6,l:"Ιούν"},{m:7,l:"Ιούλ"},{m:8,l:"Αύγ"},{m:9,l:"Σεπ"},{m:10,l:"Οκτ"}],
+                en:[{m:4,l:"Apr"},{m:5,l:"May"},{m:6,l:"Jun"},{m:7,l:"Jul"},{m:8,l:"Aug"},{m:9,l:"Sep"},{m:10,l:"Oct"}],
+                it:[{m:4,l:"Apr"},{m:5,l:"Mag"},{m:6,l:"Giu"},{m:7,l:"Lug"},{m:8,l:"Ago"},{m:9,l:"Set"},{m:10,l:"Ott"}],
+                es:[{m:4,l:"Abr"},{m:5,l:"May"},{m:6,l:"Jun"},{m:7,l:"Jul"},{m:8,l:"Ago"},{m:9,l:"Sep"},{m:10,l:"Oct"}],
+              };
+              return (ML[appLang]||ML.en).map(({m,l}) => {
               const ref = KC_MONTHLY[m];
               const isSelected = month === m;
               return (
@@ -468,7 +472,7 @@ export default function KiwiIrrigationCalc() {
                   </div>
                 </button>
               );
-            })}
+            });})()}
           </div>
           <div style={{ marginTop:10, display:"flex", gap:8 }}>
             <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
