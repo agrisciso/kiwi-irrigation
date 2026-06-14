@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 // ─── Multilingual support ───────────────────────────────────────────────────
 const LANGS = {
   el: {
-    title: "Υπολογιστής Άρδευσης Ακτινίδιου",
+    title: "Μοντέλο Άρδευσης Ακτινίδιου",
     subtitle: "Αποκλειστικό εργαλείο για πελάτες",
     brand: "AgriSci Solutions",
     password: "Κωδικός πρόσβασης",
@@ -29,7 +29,7 @@ const LANGS = {
     emittersExample: "Π.χ. 2 αγωγοί × 100 σταλ./αγωγό =",
   },
   en: {
-    title: "Kiwifruit Irrigation Calculator",
+    title: "Kiwifruit Irrigation Model",
     subtitle: "Exclusive tool for clients",
     brand: "AgriSci Solutions",
     password: "Access password",
@@ -54,7 +54,7 @@ const LANGS = {
     emittersExample: "e.g. 2 lines × 100 drippers =",
   },
   it: {
-    title: "Calcolatore Irrigazione Kiwi",
+    title: "Modello Irrigazione Kiwi",
     subtitle: "Strumento esclusivo per clienti",
     brand: "AgriSci Solutions",
     password: "Password di accesso",
@@ -79,7 +79,7 @@ const LANGS = {
     emittersExample: "Es. 2 linee × 100 gocciolatori =",
   },
   es: {
-    title: "Calculadora de Riego para Kiwi",
+    title: "Modelo de Riego para Kiwi",
     subtitle: "Herramienta exclusiva para clientes",
     brand: "AgriSci Solutions",
     password: "Contraseña de acceso",
@@ -227,8 +227,13 @@ export default function KiwiIrrigationCalc() {
   const [rowSpacing,    setRowSpacing]    = useState(5.0);
   const [result,        setResult]        = useState(null);
 
-  useEffect(() => { calculate(); }, // eslint-disable-line react-hooks/exhaustive-deps
-    [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,unit,treeAge,phenoStage,rainfall,rowSpacing]);
+  const [calculated, setCalculated] = useState(false);
+  // Mark dirty when inputs change
+  useEffect(() => { setCalculated(false); }, [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,treeAge,phenoStage,rainfall,rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Unit change: recalculate display immediately without resetting button
+  useEffect(() => { if(calculated) { calculate(); } }, [unit]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function runCalculate() { calculate(); setCalculated(true); }
 
   function calculate() {
     const soil = SOIL_TYPES_DATA[soilType];
@@ -284,7 +289,7 @@ export default function KiwiIrrigationCalc() {
 
     // Display conversion
     const factor   = unit === "stremma" ? 0.1 : 1.0;
-    const unitLabel = unit === "stremma" ? "στρέμμα" : "εκτάριο";
+    const unitLabel = unit === "stremma" ? (appLang==="el"?"στρέμμα":appLang==="en"?"stremma":appLang==="it"?"stremma":"estrémma") : (appLang==="el"?"εκτάριο":appLang==="en"?"hectare":appLang==="it"?"ettaro":"hectárea");
 
     const monthNames = ["","Ιαν","Φεβ","Μάρ","Απρ","Μάι","Ιούν","Ιούλ","Αύγ","Σεπ","Οκτ","Νοε","Δεκ"];
     setResult({
@@ -308,18 +313,25 @@ export default function KiwiIrrigationCalc() {
       undersized,
       stage: kcEntry.labels ? kcEntry.labels[appLang] : kcEntry.label,
       warning: tmax > 38
-        ? "⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης."
+        ? (appLang==="el"?"⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης.":appLang==="en"?"⚠️ High temperature — risk of water stress. Prioritise morning irrigation.":appLang==="it"?"⚠️ Temperatura elevata — rischio stress idrico. Dare priorità all'irrigazione mattutina.":"⚠️ Temperatura alta — riesgo de estrés hídrico. Priorizar el riego matutino.")
         : null,
     });
   }
 
   // Sync displayed emitters input with unit
   // Password gate
-  const [unlocked, setUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(() => {
+    try { return localStorage.getItem("agrisci_pw") === "agrisci2024"; } catch { return false; }
+  });
   const [pwInput, setPwInput] = useState("");
   const [pwError, setPwError] = useState(false);
 
-  const PASSWORD = "agrisci2024"; // αλλάξτε εδώ
+  const PASSWORD = "agrisci2024";
+
+  function doUnlock() {
+    try { localStorage.setItem("agrisci_pw", PASSWORD); } catch {}
+    setUnlocked(true);
+  }
 
   if (!unlocked) {
     return (
@@ -362,7 +374,7 @@ export default function KiwiIrrigationCalc() {
             onChange={e => { setPwInput(e.target.value); setPwError(false); }}
             onKeyDown={e => {
               if (e.key === "Enter") {
-                if (pwInput === PASSWORD) setUnlocked(true);
+                if (pwInput === PASSWORD) doUnlock();
                 else setPwError(true);
               }
             }}
@@ -375,12 +387,12 @@ export default function KiwiIrrigationCalc() {
           />
           {pwError && (
             <div style={{ color:"#e05555", fontSize:12, marginBottom:8 }}>
-              Λάθος κωδικός. Επικοινωνήστε με την AgriSci Solutions.
+              {L2.wrongPw}
             </div>
           )}
           <button
             onClick={() => {
-              if (pwInput === PASSWORD) setUnlocked(true);
+              if (pwInput === PASSWORD) doUnlock();
               else setPwError(true);
             }}
             style={{
@@ -409,7 +421,7 @@ export default function KiwiIrrigationCalc() {
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:4 }}>
               <span style={{ fontSize:28 }}>🥝</span>
               <div>
-                <div style={{ fontSize:10, letterSpacing:"0.14em", opacity:0.65, textTransform:"uppercase" }}>Precision Irrigation · AgriSci</div>
+                <div style={{ fontSize:10, letterSpacing:"0.14em", opacity:0.65, textTransform:"uppercase" }}>{appLang==="el"?"Μοντέλο Άρδευσης · AgriSci":appLang==="en"?"Irrigation Model · AgriSci":appLang==="it"?"Modello Irrigazione · AgriSci":"Modelo de Riego · AgriSci"}</div>
                 <div style={{ fontSize:18, fontWeight:800 }}>{L2.title}</div>
               </div>
             </div>
@@ -603,6 +615,24 @@ export default function KiwiIrrigationCalc() {
           </div>
         </div>
 
+        {/* Calculate button */}
+        <button
+          onClick={runCalculate}
+          style={{
+            width:"100%", padding:"14px", borderRadius:12, border:"none",
+            background: calculated ? "#2E7D52" : "#C8973A",
+            color: calculated ? "#fff" : "#1A4A2E",
+            fontSize:16, fontWeight:800, cursor:"pointer", marginBottom:14,
+            boxShadow: calculated ? "none" : "0 4px 16px rgba(200,151,58,0.4)",
+            transition:"all 0.2s",
+          }}
+        >
+          {calculated
+            ? (appLang==="el"?"✅ Αποτελέσματα ενημερωμένα":appLang==="en"?"✅ Results up to date":appLang==="it"?"✅ Risultati aggiornati":"✅ Resultados actualizados")
+            : (appLang==="el"?"⚗️ Υπολογισμός":appLang==="en"?"⚗️ Calculate":appLang==="it"?"⚗️ Calcola":"⚗️ Calcular")
+          }
+        </button>
+
         {/* Results */}
         {result && (
           <div style={{
@@ -655,7 +685,7 @@ export default function KiwiIrrigationCalc() {
                   {result.sessions > 1 && (
                     <div style={{ background:"rgba(255,255,255,0.10)", borderRadius:9, padding:"10px 12px" }}>
                       <div style={{ fontSize:11, opacity:0.65, marginBottom:4 }}>
-                        Συνιστώμενη κατανομή 
+                        {L2.sessions}
                       </div>
                       <div style={{ fontSize:16, fontWeight:800 }}>
                         {result.sessions} × {result.perSessionMin} {appLang==="el"?"λεπτά":"min"} / {L2.perDay}
