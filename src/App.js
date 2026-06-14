@@ -27,6 +27,11 @@ const LANGS = {
     stremma: "ανά στρέμμα", hectare: "ανά εκτάριο",
     emittersHelp: "Εισάγετε το σύνολο των εκπομπών (όλοι οι αγωγοί μαζί).",
     emittersExample: "Π.χ. 2 αγωγοί × 100 σταλ./αγωγό =",
+    footerCTA: "Για προσωπική αξιολόγηση χωραφιού:",
+    footerLink: "Επικοινωνήστε μαζί μας",
+    calcBtn: "Υπολογισμός",
+    pwTitle: "Μοντέλο Άρδευσης Ακτινιδίου",
+    pwSubtitle: "Εισάγετε τον κωδικό πρόσβασης",
   },
   en: {
     title: "Kiwifruit Irrigation Model",
@@ -52,6 +57,11 @@ const LANGS = {
     stremma: "per stremma", hectare: "per hectare",
     emittersHelp: "Enter total emitters across ALL driplines.",
     emittersExample: "e.g. 2 lines × 100 drippers =",
+    footerCTA: "For personalised orchard assessment:",
+    footerLink: "Contact us",
+    calcBtn: "Calculate",
+    pwTitle: "Kiwifruit Irrigation Model",
+    pwSubtitle: "Enter your access password",
   },
   it: {
     title: "Modello Irrigazione Kiwi",
@@ -77,6 +87,11 @@ const LANGS = {
     stremma: "per stremma", hectare: "per ettaro",
     emittersHelp: "Inserire il totale degli erogatori (tutte le linee).",
     emittersExample: "Es. 2 linee × 100 gocciolatori =",
+    footerCTA: "Per una valutazione personalizzata:",
+    footerLink: "Contattaci",
+    calcBtn: "Calcola",
+    pwTitle: "Modello Irrigazione Kiwi",
+    pwSubtitle: "Inserire la password di accesso",
   },
   es: {
     title: "Modelo de Riego para Kiwi",
@@ -102,6 +117,11 @@ const LANGS = {
     stremma: "por estrémma", hectare: "por hectárea",
     emittersHelp: "Introducir el total de emisores (todas las líneas).",
     emittersExample: "Ej. 2 líneas × 100 goteros =",
+    footerCTA: "Para evaluación personalizada del huerto:",
+    footerLink: "Contáctenos",
+    calcBtn: "Calcular",
+    pwTitle: "Modelo de Riego para Kiwi",
+    pwSubtitle: "Introduzca su contraseña de acceso",
   },
 };
 
@@ -188,9 +208,13 @@ function getMeasuredKc(month, age) {
   return age === "young" ? base * 0.5 : base;
 }
 
-const darkGreen = "#1A4A2E";
-const midGreen = "#2E7D52";
-const gold = "#C8973A";
+const darkGreen = "#0D2818";
+const midGreen  = "#1A3A2A";
+const accent    = "#2D5A3D";
+const gold      = "#C9A84C";
+const cream     = "#F5F0E8";
+const creamDark = "#EDE6D8";
+const textMuted = "#5A7A64";
 const cream = "#F5F0E8";
 const lightGreen = "#EAF3EC";
 const stageColors = ["#2E7D52","#C8973A","#1A4A2E","#6b9e7a"];
@@ -226,6 +250,25 @@ function loadSaved(key, defaultVal) {
 
 function saveInputs(data) {
   try { localStorage.setItem(IRRIG_STORAGE_KEY, JSON.stringify(data)); } catch {}
+}
+
+
+// ─── Irrigation Icon (water drop) ────────────────────────────────────────────
+function IrrigationIcon({ size = 42 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Water drop shape */}
+      <path d="M40 8 C40 8 18 34 18 50 C18 62 28 72 40 72 C52 72 62 62 62 50 C62 34 40 8 40 8Z" fill="#1A3A2A"/>
+      <path d="M40 14 C40 14 22 37 22 50 C22 60 30 68 40 68 C50 68 58 60 58 50 C58 37 40 14 40 14Z" fill="#C9A84C" opacity="0.15"/>
+      {/* Kiwi leaf inside drop */}
+      <ellipse cx="40" cy="48" rx="13" ry="16" fill="#2D5A3D" transform="rotate(-10 40 48)"/>
+      <line x1="40" y1="34" x2="40" y2="62" stroke="#C9A84C" strokeWidth="1.5" strokeLinecap="round" opacity="0.5"/>
+      <line x1="40" y1="44" x2="30" y2="52" stroke="#C9A84C" strokeWidth="1" strokeLinecap="round" opacity="0.4"/>
+      <line x1="40" y1="44" x2="50" y2="52" stroke="#C9A84C" strokeWidth="1" strokeLinecap="round" opacity="0.4"/>
+      {/* Water drop highlight */}
+      <ellipse cx="32" cy="36" rx="4" ry="6" fill="white" opacity="0.15" transform="rotate(-20 32 36)"/>
+    </svg>
+  );
 }
 
 export default function KiwiIrrigationCalc() {
@@ -357,93 +400,89 @@ export default function KiwiIrrigationCalc() {
   if (!unlocked) {
     return (
       <div style={{
-        minHeight:"100vh", background:cream,
-        fontFamily:"'Inter','Segoe UI',sans-serif",
-        display:"flex", alignItems:"center", justifyContent:"center",
-        padding:24,
+        minHeight:"100vh", background:darkGreen,
+        fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:24,
       }}>
+        <div style={{ display:"flex", gap:6, marginBottom:32 }}>
+          {["el","en","it","es"].map(l => (
+            <button key={l} onClick={() => setAppLang(l)} style={{
+              padding:"4px 10px", borderRadius:20,
+              border:`1.5px solid ${appLang===l ? gold : gold+"44"}`,
+              background:appLang===l ? gold : "transparent",
+              color:appLang===l ? darkGreen : gold,
+              fontSize:11, fontWeight:700, cursor:"pointer",
+            }}>
+              {l==="el"?"🇬🇷 ΕΛ":l==="en"?"🇬🇧 EN":l==="it"?"🇮🇹 IT":"🇪🇸 ES"}
+            </button>
+          ))}
+        </div>
         <div style={{
-          background:"#fff", borderRadius:16, padding:"32px 28px",
-          boxShadow:"0 4px 24px rgba(26,74,46,0.12)",
-          border:"1px solid #d6ead9", maxWidth:340, width:"100%",
-          textAlign:"center",
+          background:cream, borderRadius:20, padding:"36px 28px",
+          maxWidth:360, width:"100%", textAlign:"center",
         }}>
-          {/* Language selector on login */}
-          <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:16 }}>
-            {["el","en","it","es"].map(l => (
-              <button key={l} onClick={() => setAppLang(l)} style={{
-                padding:"4px 10px", borderRadius:6, border:"none", cursor:"pointer",
-                background: appLang===l ? darkGreen : "#fff",
-                color: appLang===l ? "#fff" : darkGreen,
-                fontSize:11, fontWeight:700,
-                border: `1.5px solid ${appLang===l ? darkGreen : "#ccc"}`,
-              }}>{l==="el"?"ΕΛ":l==="en"?"EN":l==="it"?"IT":"ES"}</button>
-            ))}
+          <div style={{
+            width:80, height:80, borderRadius:20, background:darkGreen,
+            margin:"0 auto 20px", display:"flex", alignItems:"center", justifyContent:"center",
+          }}>
+            <IrrigationIcon size={56}/>
           </div>
-          <div style={{ fontSize:40, marginBottom:12 }}>🥝</div>
-          <div style={{ fontSize:20, fontWeight:800, color:darkGreen, marginBottom:4 }}>
-            {L2.title}
+          <div style={{ fontSize:11, color:gold, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase", marginBottom:6 }}>
+            AgriSci Solutions
           </div>
-          <div style={{ fontSize:13, color:"#666", marginBottom:24, lineHeight:1.5 }}>
-            {L2.subtitle}<br/>
-            <strong style={{ color:midGreen }}>{L2.brand}</strong>
+          <div style={{ fontSize:20, fontWeight:800, color:"#1A2E1E", marginBottom:6 }}>
+            {L2.pwTitle || L2.title}
+          </div>
+          <div style={{ fontSize:13, color:textMuted, marginBottom:28 }}>
+            {L2.pwSubtitle || L2.subtitle}
           </div>
           <input
-            type="password"
-            placeholder={L2.password}
-            value={pwInput}
+            type="password" placeholder={L2.password} value={pwInput}
             onChange={e => { setPwInput(e.target.value); setPwError(false); }}
-            onKeyDown={e => {
-              if (e.key === "Enter") {
-                if (pwInput === PASSWORD) doUnlock();
-                else setPwError(true);
-              }
-            }}
+            onKeyDown={e => { if (e.key==="Enter") { if(pwInput===PASSWORD) doUnlock(); else setPwError(true); }}}
             style={{
-              width:"100%", padding:"12px 14px", borderRadius:9,
-              border: pwError ? "2px solid #e05555" : "1.5px solid #cde0d4",
-              fontSize:15, outline:"none", marginBottom:8,
-              fontFamily:"inherit", boxSizing:"border-box",
+              width:"100%", padding:"12px 16px", borderRadius:10,
+              border:`2px solid ${pwError ? "#C0392B" : creamDark}`,
+              background:"#fff", fontSize:16, color:"#1A2E1E",
+              outline:"none", boxSizing:"border-box", marginBottom:8,
+              textAlign:"center", letterSpacing:"0.1em",
             }}
           />
-          {pwError && (
-            <div style={{ color:"#e05555", fontSize:12, marginBottom:8 }}>
-              {L2.wrongPw}
-            </div>
-          )}
+          {pwError && <div style={{ color:"#C0392B", fontSize:12, marginBottom:8, fontWeight:600 }}>{L2.wrongPw}</div>}
           <button
-            onClick={() => {
-              if (pwInput === PASSWORD) doUnlock();
-              else setPwError(true);
-            }}
+            onClick={() => { if(pwInput===PASSWORD) doUnlock(); else setPwError(true); }}
             style={{
-              width:"100%", padding:"12px 0", borderRadius:9, border:"none",
-              background:darkGreen, color:"#fff", fontSize:15, fontWeight:700,
-              cursor:"pointer",
+              width:"100%", padding:"13px", borderRadius:10, background:darkGreen,
+              color:gold, border:"none", fontSize:15, fontWeight:800,
+              cursor:"pointer", letterSpacing:"0.05em", marginTop:4,
             }}
-          >
-            {L2.enter}
-          </button>
-          <div style={{ marginTop:20, fontSize:11, color:"#aaa" }}>
-            agrisci-solutions.com
+          >{L2.enter}</button>
+          <div style={{ marginTop:24, fontSize:11, color:textMuted, lineHeight:1.8 }}>
+            {L2.footerCTA}{" "}
+            <a href="https://agrisci-solutions.com/#tools" style={{ color:"#2D5A3D", fontWeight:600 }}>
+              agrisci-solutions.com
+            </a>
           </div>
         </div>
       </div>
     );
   }
 
+
   return (
-    <div style={{ minHeight:"100vh", background:cream, fontFamily:"'Inter','Segoe UI',sans-serif", color:darkGreen }}>
+    <div style={{ minHeight:"100vh", background:darkGreen, fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }}>
 
       {/* Header */}
       <div style={{ background:`linear-gradient(135deg,${darkGreen} 0%,${midGreen} 100%)`, padding:"24px 22px 18px", color:"#fff" }}>
         <div style={{ maxWidth:540, margin:"0 auto" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:4 }}>
-              <span style={{ fontSize:28 }}>🥝</span>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:12, padding:6 }}>
+                <IrrigationIcon size={38}/>
+              </div>
               <div>
-                <div style={{ fontSize:10, letterSpacing:"0.14em", opacity:0.65, textTransform:"uppercase" }}>{appLang==="el"?"Μοντέλο Άρδευσης · AgriSci":appLang==="en"?"Irrigation Model · AgriSci":appLang==="it"?"Modello Irrigazione · AgriSci":"Modelo de Riego · AgriSci"}</div>
-                <div style={{ fontSize:18, fontWeight:800 }}>{L2.title}</div>
+                <div style={{ fontSize:11, color:gold, fontWeight:700, letterSpacing:"0.15em", textTransform:"uppercase" }}>AgriSci Solutions</div>
+                <div style={{ fontSize:18, fontWeight:800, color:"#F5F0E8" }}>{L2.title}</div>
               </div>
             </div>
             <div style={{ display:"flex", gap:5 }}>
@@ -762,6 +801,15 @@ export default function KiwiIrrigationCalc() {
             </div>
           </div>
         )}
+
+      {/* Footer */}
+      <div style={{ textAlign:"center", fontSize:11, color:textMuted, padding:"16px 16px 32px", lineHeight:1.8 }}>
+        <span style={{ color:gold, fontWeight:700 }}>AgriSci Solutions</span> · agrisci-solutions.com<br/>
+        {L2.footerCTA}{" "}
+        <a href="https://agrisci-solutions.com" style={{ color:"#2D5A3D", fontWeight:600 }}>
+          {L2.footerLink}
+        </a>
+      </div>
 
       </div>
     </div>
