@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { supabase, signOut } from "./agrisci-auth";
 import LoginGate from "./LoginGate";
-
+ 
 // ─── Multilingual support ───────────────────────────────────────────────────
 const LANGS = {
   el: {
@@ -126,12 +126,12 @@ const LANGS = {
     pwSubtitle: "Introduzca su contraseña de acceso",
   },
 };
-
+ 
 // Kc & ET0 measured values — user's field data (mature kiwifruit, Mediterranean)
 // Apr:0.50 May:0.70 Jun:0.90 Jul:1.10 Aug:1.10 Sep:0.80 Oct:0.80
 // Minimum ETc (mm/day): May:4.2 Jun:4.9 Jul:5.2 Aug:5.2
 // Young trees (1-3yr): partial canopy ~50% → Kc halved
-
+ 
 // Monthly Kc lookup for precise calculation
 const KC_MONTHLY = {
   3:  { kc: 0.10, et0ref: 1.50 }, // Μάρτιος (εκτίμηση)
@@ -144,7 +144,7 @@ const KC_MONTHLY = {
   10: { kc: 0.39, et0ref: 1.90 }, // Οκτώβριος
   11: { kc: 0.20, et0ref: 1.20 }, // Νοέμβριος (εκτίμηση)
 };
-
+ 
 const KC_TABLE = {
   young: [
     { labels: { el:"Βλάστηση – Ανθοφορία (Μάρ–Απρ)", en:"Budbreak – Flowering (Mar–Apr)", it:"Germogliamento – Fioritura (Mar–Apr)", es:"Brotación – Floración (Mar–Abr)" }, kc: 0.07, months: [3,4] },
@@ -159,35 +159,35 @@ const KC_TABLE = {
     { labels: { el:"Προσυγκομιδή – Συγκομιδή (Σεπ–Οκτ)", en:"Pre-harvest – Harvest (Sep–Oct)", it:"Pre-raccolta – Raccolta (Set–Ott)", es:"Pré-cosecha – Cosecha (Sep–Oct)" }, kc: 0.52, months: [9,10] },
   ],
 };
-
+ 
 const SOIL_TYPES_DATA = {
   sandy_loam: { fc: 28, wp: 12, bulk: 1.45 },
   clay_loam:  { fc: 39, wp: 19, bulk: 1.39 },
   clay:       { fc: 52, wp: 24, bulk: 1.35 },
   loam:       { fc: 35, wp: 16, bulk: 1.40 },
 };
-
+ 
 const SOIL_LABELS = {
   el: { sandy_loam: "Αμμοαργιλοπηλώδες (FAS) – ελαφρύ", clay_loam: "Αργιλοπηλώδες (FA) – μέσο", clay: "Αργιλώδες (A) – βαρύ", loam: "Πηλώδες (F) – μέσο-βαρύ" },
   en: { sandy_loam: "Sandy Clay Loam (light)", clay_loam: "Clay Loam (medium)", clay: "Clay (heavy)", loam: "Loam (medium-heavy)" },
   it: { sandy_loam: "Franco Argilloso Sabbioso (leggero)", clay_loam: "Franco Argilloso (medio)", clay: "Argilloso (pesante)", loam: "Franco (medio-pesante)" },
   es: { sandy_loam: "Franco Arcillo Arenoso (ligero)", clay_loam: "Franco Arcilloso (medio)", clay: "Arcilloso (pesado)", loam: "Franco (medio-pesado)" },
 };
-
+ 
 const IRRIGATION_SYSTEMS_DATA = {
   drip_1dl:  { efficiency: 0.90, wetted_width: 0.5 },
   drip_2dl:  { efficiency: 0.90, wetted_width: 1.0 },
   drip_4dl:  { efficiency: 0.90, wetted_width: 2.0 },
   sprinkler: { efficiency: 0.82, wetted_width: 2.0 },
 };
-
+ 
 const IRRIG_LABELS = {
   el: { drip_1dl: "Σταγόνα – 1 αγωγός/σειρά | αποδ. 90%", drip_2dl: "Σταγόνα – 2 αγωγοί/σειρά | αποδ. 90%", drip_4dl: "Σταγόνα – 4 αγωγοί/σειρά | αποδ. 90%", sprinkler: "Μικρο-εκτοξευτήρας (Sprinkler) | αποδ. 82%" },
   en: { drip_1dl: "Drip – 1 line/row | eff. 90%", drip_2dl: "Drip – 2 lines/row | eff. 90%", drip_4dl: "Drip – 4 lines/row | eff. 90%", sprinkler: "Micro-sprinkler | eff. 82%" },
   it: { drip_1dl: "Goccia – 1 ala/fila | eff. 90%", drip_2dl: "Goccia – 2 ali/fila | eff. 90%", drip_4dl: "Goccia – 4 ali/fila | eff. 90%", sprinkler: "Micro-sprinkler | eff. 82%" },
   es: { drip_1dl: "Goteo – 1 línea/fila | ef. 90%", drip_2dl: "Goteo – 2 líneas/fila | ef. 90%", drip_4dl: "Goteo – 4 líneas/fila | ef. 90%", sprinkler: "Micro-aspersor | ef. 82%" },
 };
-
+ 
 // ET0 from Tmax — calibrated to match measured monthly averages:
 // Apr(Tmax~21°C)→2.8  May(~29°C)→5.0  Jun(~31°C)→5.5
 // Jul(~38°C)→7.5  Aug(~34°C)→6.5  Sep(~23°C)→3.4  Oct(~18°C)→1.9
@@ -197,19 +197,19 @@ function estimateET0(tmax) {
   if (tmax <= 38) return 2.5 + (tmax - 20) * 0.278;
   return 7.5 + (tmax - 38) * 0.175;
 }
-
+ 
 // Get reference ET0 for selected month (from measured table)
 function getRefET0(month) {
   return KC_MONTHLY[month]?.et0ref ?? null;
 }
-
+ 
 // Get measured Kc for selected month and age
 function getMeasuredKc(month, age) {
   const base = KC_MONTHLY[month]?.kc ?? null;
   if (!base) return null;
   return age === "young" ? base * 0.5 : base;
 }
-
+ 
 const darkGreen = "#0D2818";
 const midGreen  = "#1A3A2A";
 const accent    = "#2D5A3D";
@@ -219,7 +219,7 @@ const creamDark = "#EDE6D8";
 const textMuted = "#5A7A64";
 const lightGreen = "#EAF3EC";
 const stageColors = ["#2E7D52","#C8973A","#1A4A2E","#6b9e7a"];
-
+ 
 const inputStyle = {
   width:"100%", padding:"10px 12px", borderRadius:8,
   border:"1.5px solid #cde0d4", background:"#fff",
@@ -235,11 +235,11 @@ const cardStyle = {
   marginBottom:14, boxShadow:"0 2px 10px rgba(26,74,46,0.07)",
   border:"1px solid #d6ead9",
 };
-
-
+ 
+ 
 // ─── Persist inputs to localStorage ────────────────────────────────────────
 const IRRIG_STORAGE_KEY = 'agrisci_irrigation_inputs';
-
+ 
 function loadSaved(key, defaultVal) {
   try {
     const s = localStorage.getItem(IRRIG_STORAGE_KEY);
@@ -248,12 +248,12 @@ function loadSaved(key, defaultVal) {
     return key in d ? d[key] : defaultVal;
   } catch { return defaultVal; }
 }
-
+ 
 function saveInputs(data) {
   try { localStorage.setItem(IRRIG_STORAGE_KEY, JSON.stringify(data)); } catch {}
 }
-
-
+ 
+ 
 // ─── Irrigation Icon (water drop) ────────────────────────────────────────────
 function IrrigationIcon({ size = 42 }) {
   return (
@@ -271,7 +271,7 @@ function IrrigationIcon({ size = 42 }) {
     </svg>
   );
 }
-
+ 
 export default function KiwiIrrigationCalc() {
   const [appLang,       setAppLang]       = useState(() => loadSaved("appLang", "el"));
   const L2 = LANGS[appLang];
@@ -287,77 +287,77 @@ export default function KiwiIrrigationCalc() {
   const [rainfall,      setRainfall]      = useState(() => (parseInt(loadSaved("rainfall", 0)) || 0));
   const [rowSpacing,    setRowSpacing]    = useState(() => parseFloat(loadSaved("rowSpacing", 5.0) ?? 5.0));
   const [result,        setResult]        = useState(null);
-
+ 
   const [calculated, setCalculated] = useState(false);
   // Mark dirty when inputs change
   useEffect(() => { setCalculated(false); }, [tmax,month,soilType,irrigSystem,emittersHa,emitterFlow,treeAge,phenoStage,rainfall,rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
   // Unit change: recalculate display immediately without resetting button
   function runCalculate() { calculate(unit); setCalculated(true); }
-
+ 
   // Save inputs whenever they change
   useEffect(() => {
     saveInputs({ appLang, tmax, month, soilType, irrigSystem, emittersHa, emitterFlow, unit, treeAge, phenoStage, rainfall, rowSpacing });
   }, [appLang, tmax, month, soilType, irrigSystem, emittersHa, emitterFlow, unit, treeAge, phenoStage, rainfall, rowSpacing]); // eslint-disable-line react-hooks/exhaustive-deps
-
+ 
   function calculate(overrideUnit) {
     const activeUnit = overrideUnit ?? unit;
     const soil = SOIL_TYPES_DATA[soilType];
     const sys  = IRRIGATION_SYSTEMS_DATA[irrigSystem];
     const kcEntry = KC_TABLE[treeAge][phenoStage];
-
+ 
     // Use measured monthly Kc if month is in table, else use stage average
     const measuredKc = getMeasuredKc(month, treeAge);
     const kc = measuredKc !== null ? measuredKc : kcEntry.kc;
-
+ 
     // Use measured monthly ET0 reference if available, else estimate from Tmax
     // Blend: if user's Tmax diverges from monthly avg, adjust proportionally
     // ET0 from Tmax (calibrated to measured monthly averages)
     const et0 = estimateET0(tmax);
     const etc  = et0 * kc;
-
+ 
     // Effective rainfall — only fraction reaches wetted root zone (Dichio/Frutticoltura 2020)
     const wetted_frac = Math.min(1.0, sys.wetted_width / rowSpacing);
     const pu = Math.min(rainfall * wetted_frac, etc * 0.85);
-
+ 
     const netMM = Math.max(0, etc - pu);
-
+ 
     // Gross irrigation volume [m³/ha/day]   IV = (ETc–Pu)/ime × 10
     const grossM3Ha = (netMM / sys.efficiency) * 10;
-
+ 
     // Wetted soil volume Vs = A × d × L
     const lengthPerHa = 10000 / rowSpacing;
     const Vs = sys.wetted_width * 0.50 * lengthPerHa;  // m³/ha
-
+ 
     // Available & readily available water in Vs
     const aw_pct = (soil.fc - soil.wp) / 100;
     const AW  = Vs * aw_pct;  // m³/ha (volumetric water content)
     const RAW = AW * 0.40;                         // 40% threshold 
-
+ 
     // Irrigation frequency: days to deplete RAW
     const rawMM = RAW / 10;
     const freq = netMM > 0 ? Math.max(1, Math.round(rawMM / netMM)) : 999;
-
+ 
     // Display conversion factor (1 ha = 10 stremma)
     const factor = activeUnit === "stremma" ? 0.1 : 1.0;
-
+ 
     // ── Run-time calculation ─────────────────────────────────────────────
     // System flow per unit area
     const systemFlowM3HaH = (emittersHa * emitterFlow) / 1000;
     const systemFlowUnit  = systemFlowM3HaH * factor;
-
+ 
     // Hours to irrigate one unit of area
     const grossUnit  = grossM3Ha * factor;
     const runTimeH   = systemFlowUnit > 0 ? grossUnit / systemFlowUnit : 0;
     const runTimeMin = runTimeH * 60;
-
+ 
     // Recommended sessions per day
     const sessions = runTimeH > 3 ? 3 : runTimeH > 1.5 ? 2 : 1;
     const perSessionMin = runTimeMin / sessions;
-
+ 
     // Undersized flag
     const undersized = runTimeH > 12;
     const unitLabel = activeUnit === "stremma" ? (appLang==="el"?"στρέμμα":appLang==="en"?"stremma":appLang==="it"?"stremma":"estrémma") : (appLang==="el"?"εκτάριο":appLang==="en"?"hectare":appLang==="it"?"ettaro":"hectárea");
-
+ 
     const monthNames = ["","Ιαν","Φεβ","Μάρ","Απρ","Μάι","Ιούν","Ιούλ","Αύγ","Σεπ","Οκτ","Νοε","Δεκ"];
     setResult({
       et0: et0.toFixed(1),
@@ -382,12 +382,12 @@ export default function KiwiIrrigationCalc() {
       highTemp: tmax > 38,
     });
   }
-
+ 
   // Sync displayed emitters input with unit
   // Password gate
   const [session, setSession] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-
+ 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -398,7 +398,7 @@ export default function KiwiIrrigationCalc() {
     });
     return () => subscription.unsubscribe();
   }, []);
-
+ 
   if (loadingAuth) {
     return (
       <div style={{ minHeight:"100vh", background:"#0D2818", display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -406,7 +406,7 @@ export default function KiwiIrrigationCalc() {
       </div>
     );
   }
-
+ 
   if (!session) {
     return (
       <LoginGate
@@ -418,11 +418,11 @@ export default function KiwiIrrigationCalc() {
       />
     );
   }
-
-
+ 
+ 
   return (
     <div style={{ minHeight:"100vh", background:darkGreen, fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif" }}>
-
+ 
       {/* Header */}
       <div style={{ background:`linear-gradient(135deg,${darkGreen} 0%,${midGreen} 100%)`, padding:"24px 22px 18px", color:"#fff" }}>
         <div style={{ maxWidth:540, margin:"0 auto" }}>
@@ -437,21 +437,21 @@ export default function KiwiIrrigationCalc() {
               </div>
             </div>
             <div style={{ display:"flex", gap:5 }}>
-              {["el","en","it","es"].map(l => (
+              {[{c:"el",f:"🇬🇷"},{c:"en",f:"🇬🇧"},{c:"it",f:"🇮🇹"},{c:"es",f:"🇪🇸"}].map(({c:l,f}) => (
                 <button key={l} onClick={() => setAppLang(l)} style={{
-                  padding:"4px 8px", borderRadius:6, border:"none", cursor:"pointer",
+                  padding:"4px 7px", borderRadius:6, border:"none", cursor:"pointer",
                   background: appLang===l ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.1)",
-                  color:"#fff", fontSize:11, fontWeight:700,
-                }}>{l.toUpperCase()}</button>
+                  color:"#fff", fontSize:16, fontWeight:700, lineHeight:1,
+                }}>{f}</button>
               ))}
             </div>
           </div>
-
+ 
         </div>
       </div>
-
+ 
       <div style={{ maxWidth:540, margin:"0 auto", padding:"16px 15px 40px" }}>
-
+ 
         {/* Unit toggle */}
         <div style={{ display:"flex", gap:8, marginBottom:14 }}>
           {["stremma","hectare"].map(u => (
@@ -464,7 +464,7 @@ export default function KiwiIrrigationCalc() {
             }}>{u==="stremma" ? (appLang==="el"?"Στρέμμα":"Stremma") : (appLang==="el"?"Εκτάριο":"Hectare")}</button>
           ))}
         </div>
-
+ 
         {/* Month selector */}
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>{appLang==="el"?"📅 Μήνας":appLang==="en"?"📅 Month":appLang==="it"?"📅 Mese":"📅 Mes"}</div>
@@ -497,7 +497,7 @@ export default function KiwiIrrigationCalc() {
               );
             });})()}
           </div>
-          <div style={{ marginTop:10, display:"flex", gap:8 }}>
+          <div style={{ marginTop:10, display:"none" }}>
             
             <div style={{ flex:1, background:lightGreen, borderRadius:8, padding:"7px 10px", textAlign:"center" }}>
               <div style={{ fontSize:9, color:midGreen, fontWeight:700 }}>{appLang==="el"?"ET₀ αναφοράς (mm/ημ)":appLang==="en"?"ET₀ reference (mm/day)":appLang==="it"?"ET₀ riferimento (mm/g)":"ET₀ referencia (mm/día)"}</div>
@@ -505,7 +505,7 @@ export default function KiwiIrrigationCalc() {
             </div>
           </div>
         </div>
-
+ 
         {/* Climate */}
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🌡️ {L2.tmax.split("(")[0]}</div>
@@ -528,7 +528,7 @@ export default function KiwiIrrigationCalc() {
           <input type="number" min={0} max={60} value={rainfall} step={1}
             onChange={e => setRainfall(Number(e.target.value))} style={inputStyle} />
         </div>
-
+ 
         {/* Tree */}
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>{`🌿 ${L2.treeAge}`}</div>
@@ -555,7 +555,7 @@ export default function KiwiIrrigationCalc() {
           <input type="number" min={3} max={7} value={rowSpacing} step={0.5}
             onChange={e => setRowSpacing(Number(e.target.value))} style={inputStyle} />
         </div>
-
+ 
         {/* Soil */}
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>🪱 {L2.soil}</div>
@@ -577,11 +577,11 @@ export default function KiwiIrrigationCalc() {
             ))}
           </div>
         </div>
-
+ 
         {/* Irrigation system */}
         <div style={cardStyle}>
           <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>💧 {L2.system}</div>
-
+ 
           <label style={labelStyle}>{L2.system}</label>
           <select value={irrigSystem} onChange={e => setIrrigSystem(e.target.value)}
             style={{ ...inputStyle, marginBottom:14 }}>
@@ -589,7 +589,7 @@ export default function KiwiIrrigationCalc() {
               <option key={k} value={k}>{IRRIG_LABELS[appLang][k]}</option>
             ))}
           </select>
-
+ 
           {/* Emitters — clearly labeled as TOTAL across all lines */}
           <div style={{ background:"#f0f7f2", borderRadius:10, padding:"12px 14px", marginBottom:10 }}>
             <div style={{ fontSize:12, fontWeight:700, color:midGreen, marginBottom:8 }}>
@@ -622,7 +622,7 @@ export default function KiwiIrrigationCalc() {
             )}
           </div>
         </div>
-
+ 
         {/* Calculate button */}
         <button
           onClick={runCalculate}
@@ -640,7 +640,7 @@ export default function KiwiIrrigationCalc() {
             : (appLang==="el"?"⚗️ Υπολογισμός":appLang==="en"?"⚗️ Calculate":appLang==="it"?"⚗️ Calcola":"⚗️ Calcular")
           }
         </button>
-
+ 
         {/* Results */}
         {result && (
           <div style={{
@@ -650,14 +650,14 @@ export default function KiwiIrrigationCalc() {
             <div style={{ fontSize:11, letterSpacing:"0.1em", opacity:0.65, marginBottom:12, textTransform:"uppercase" }}>
               📊 {L2.results}
             </div>
-
+ 
             {/* Water need */}
             <div style={{ textAlign:"center", marginBottom:18, paddingBottom:16, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:12, opacity:0.7, marginBottom:2 }}>{L2.waterNeeded}</div>
               <div style={{ fontSize:52, fontWeight:900, lineHeight:1, color:gold }}>{result.grossM3}</div>
               <div style={{ fontSize:15, opacity:0.8 }}>m³/{unit==="stremma"?(appLang==="el"?"στρ":appLang==="en"?"str":appLang==="it"?"str":"str"):"ha"}/{L2.perDay}</div>
             </div>
-
+ 
             {/* ET stats */}
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:16, paddingBottom:16, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               {[
@@ -672,13 +672,13 @@ export default function KiwiIrrigationCalc() {
                 </div>
               ))}
             </div>
-
+ 
             {/* Operational — this is what changes with emitters */}
             <div style={{ marginBottom:14, paddingBottom:14, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:11, opacity:0.6, textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:10 }}>
                 {appLang==="el"?"⏱️ Χρόνος Λειτουργίας":"⏱️ "+(appLang==="en"?"System Run Time":appLang==="it"?"Tempo Funzionamento":"Tiempo Funcionamiento")}
               </div>
-
+ 
               {result.undersized ? (
                 <div style={{ background:"rgba(255,100,100,0.2)", borderRadius:10, padding:"12px", fontSize:13 }}>
                   ⚠️ <strong>{L2.undersized}</strong><br/>
@@ -703,7 +703,7 @@ export default function KiwiIrrigationCalc() {
                 </>
               )}
             </div>
-
+ 
             {/* Soil water */}
             <div style={{ marginBottom:14, paddingBottom:14, borderBottom:"1px solid rgba(255,255,255,0.15)" }}>
               <div style={{ fontSize:11, opacity:0.6, textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:8 }}>
@@ -722,7 +722,7 @@ export default function KiwiIrrigationCalc() {
                 ))}
               </div>
             </div>
-
+ 
             {/* Frequency */}
             <div style={{ display:"flex", justifyContent:"space-between" }}>
               <span style={{ opacity:0.75, fontSize:13 }}>📅 {L2.cycle}</span>
@@ -732,14 +732,14 @@ export default function KiwiIrrigationCalc() {
             </div>
           </div>
         )}
-
+ 
         {/* Warnings */}
         {result?.highTemp && (
           <div style={{ background:"#fff8e6", border:`1.5px solid ${gold}`, borderRadius:10, padding:"11px 14px", fontSize:13, color:"#7a5a00", marginBottom:12 }}>
             {appLang==="el"?"⚠️ Υψηλή θερμοκρασία — κίνδυνος υδατικής καταπόνησης. Προτεραιότητα πρωινής άρδευσης.":appLang==="en"?"⚠️ High temperature — risk of water stress. Prioritise morning irrigation.":appLang==="it"?"⚠️ Temperatura elevata — rischio stress idrico. Dare priorità all'irrigazione mattutina.":"⚠️ Temperatura alta — riesgo de estrés hídrico. Priorizar el riego matutino."}
           </div>
         )}
-
+ 
         {/* Stage note */}
         {phenoStage === 1 && (
           <div style={{ ...cardStyle, borderLeft:`4px solid ${gold}` }}>
@@ -749,7 +749,7 @@ export default function KiwiIrrigationCalc() {
             </div>
           </div>
         )}
-
+ 
       {/* Footer */}
       <div style={{ textAlign:"center", fontSize:11, color:textMuted, padding:"16px 16px 32px", lineHeight:1.8 }}>
         <span style={{ color:gold, fontWeight:700 }}>AgriSci Solutions</span> · agrisci-solutions.com<br/>
@@ -758,8 +758,9 @@ export default function KiwiIrrigationCalc() {
           {L2.footerLink}
         </a>
       </div>
-
+ 
       </div>
     </div>
   );
 }
+ 
